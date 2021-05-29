@@ -1,0 +1,141 @@
+html {
+    overflow: hidden;
+}
+
+body {
+    height:100%;
+    width:100%;
+    background-color:#000000;
+}
+
+.game {
+    margin: 0 auto;
+    width: 1100px;
+    height:100%;
+    background-color:#192124;
+    display: flex;
+}
+
+.players-block {
+    height: 100%;
+    max-width: 30%;
+    background-color:#293d44;
+    flex-grow: 1;
+}
+
+.game-block {
+    width: 100vmin;
+    height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-field {
+    width: 90%;
+    height:90%;
+    background-color: #fbffff;
+    position: relative;
+}
+
+.play-cell {
+    width: 8%;
+    height: 8%;
+
+    outline: 1px solid #293d44;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+}
+
+.play-cell img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.top-cell {
+    top:0;
+    width:8%;
+    height:14%;
+}
+.right-cell {
+    right:0;
+    width:14%;
+    height:8;
+}
+.bottom-cell {
+    bottom:0;
+    width:8%;
+    height:14%;
+}
+.left-cell {
+    left:0;
+    width:14%;
+    height:8;
+}
+
+.square-cell {
+    width: 14%;
+    height: 14%;
+}
+
+.rot-270{
+    transform: rotate(270deg);
+}
+/* верхняя линия */
+.play-cell-2 {left:14%;}
+.play-cell-3 {left:22%;}
+.play-cell-4 {left:30%;}
+.play-cell-5 {left:38%;}
+.play-cell-6 {left:46%;}
+.play-cell-7 {left:54%;}
+.play-cell-8 {left:62%;}
+.play-cell-9 {left:70%;}
+.play-cell-10 {left:78%;}
+/* правая линия */
+.play-cell-12 {top:14%;}
+.play-cell-13 {top:22%;}
+.play-cell-14 {top:30%;}
+.play-cell-15 {top:38%;}
+.play-cell-16 {top:46%;}
+.play-cell-17 {top:54%;}
+.play-cell-18 {top:62%;}
+.play-cell-19 {top:70%;}
+.play-cell-20 {top:78%;}
+/* нижняя линия */
+.play-cell-22 {right:14%;}
+.play-cell-23 {right:22%;}
+.play-cell-24 {right:30%;}
+.play-cell-25 {right:38%;}
+.play-cell-26 {right:46%;}
+.play-cell-27 {right:54%;}
+.play-cell-28 {right:62%;}
+.play-cell-29 {right:70%;}
+.play-cell-30 {right:78%;}
+
+.roll-dice-btn {
+    width:144px;
+    height: 72px;
+    position: absolute;
+    top: 144px;
+    left: 144px;
+}
+#dice1-result-text {
+    width:144px;
+    height: 36px;
+    position: absolute;
+    top: 144px;
+    left: 432px;
+    color:white;
+    font-size:16px;
+}
+#dice2-result-text {
+    width:144px;
+    height: 36px;
+    position: absolute;
+    top: 180px;
+    left: 432px;
+    color:white;
+    font-size:16px;
+}
