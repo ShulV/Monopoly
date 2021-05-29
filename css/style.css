@@ -113,7 +113,17 @@ body {
 .play-cell-28 {right:62%;}
 .play-cell-29 {right:70%;}
 .play-cell-30 {right:78%;}
-
+/* левая линия */
+.play-cell-32 {bottom:14%;}
+.play-cell-33 {bottom:22%;}
+.play-cell-34 {bottom:30%;}
+.play-cell-35 {bottom:38%;}
+.play-cell-36 {bottom:46%;}
+.play-cell-37 {bottom:54%;}
+.play-cell-38 {bottom:62%;}
+.play-cell-39 {bottom:70%;}
+.play-cell-40 {bottom:78%;}
+.play-cell-41 {bottom:78%;}
 .roll-dice-btn {
     width:144px;
     height: 72px;
