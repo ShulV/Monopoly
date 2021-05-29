@@ -124,6 +124,16 @@ body {
 .play-cell-39 {bottom:70%;}
 .play-cell-40 {bottom:78%;}
 .play-cell-41 {bottom:78%;}
+
+.chat-block{
+    height: 72%;
+    width:72%;
+    position:absolute;
+    top:14%;
+    left:14%;
+    background-color:#192124;
+}
+
 .roll-dice-btn {
     width:144px;
     height: 72px;
