@@ -1,0 +1,33 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>test</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!--[if lt IE 9]>
+ <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <input class="roll-dice-btn" id="roll-dice-btn" value="Бросить кубики" onclick="rollTheDice()" type="button">
+  <label id="dice1-result-text">На 1-ом кубике выпало: ...</label>
+    <label id="dice2-result-text">На 2-ом кубике выпало: ...</label>
+  <div class="container">
+    <svg class="svg-path" viewBox="10 10 200 100">
+      <path d="m 44.340015,28.998743 c 23.011905,0.748356 127.781555,0 127.594465,4.864306 -0.18709,4.864304 -2.80633,92.421801 -2.80633,94.666861 0,2.24507 -123.665603,9.16735 -125.910667,5.42557 -2.245066,-3.74177 1.122532,-104.956737 1.122532,-104.956737 z"></path>
+    </svg>
+    <div class="block"></div>
+  </div>
+  <input type="range" min="0" max="100" step="1"/>
+  <h1>offset-distance: 50%;</h1>
+
+  <script src="js.js"></script>
+</body>
+</html>

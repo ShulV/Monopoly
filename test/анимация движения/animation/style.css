@@ -1,0 +1,24 @@
+﻿.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+    width: 70vh;
+    outline: 1px solid black;
+}
+
+.dot {
+    height: 30px;
+    width: 30px;
+    background-color: red;
+    border-radius: 50%;
+    offset-path: path("M 1 12 C 151.333 46.6667 369.4 134.4 39 208 C 35.3333 267.333 121 436.8 493 640 C 958 894 799 418 589 345 C 421 286.6 625.667 91.3333 749 1 L 1 12 Z");
+    animation: move 5s linear infinite;
+}
+
+@keyframes move {
+    100% {
+        offset-distance: 100%;
+        
+    }
+}
