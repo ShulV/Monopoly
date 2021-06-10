@@ -1,11 +1,12 @@
 const INPUT = document.querySelector('input');
 const BLOCK = document.querySelector('.block');
 const H = document.querySelector('h1');
+const PATH = document.querySelector('.path');
 
-const update = e => {
-  BLOCK.style.setProperty('--distance', e.target.value);
-  H.innerHTML = `offset-distance: ${e.target.value}%;`;
-};
+// const update = e => {
+//   BLOCK.style.setProperty('--distance', e.target.value);
+//   H.innerHTML = `offset-distance: ${e.target.value}%;`;
+// };
 
 INPUT.addEventListener('input', update);
 
@@ -14,6 +15,32 @@ function randomInteger(min, max) {
   let rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
 }
+
+// функция выдает путь по квадрату относительно размера экрана пользователя
+function setScalablePath(){
+  // "M10 10 h 180 v 180 h -180 Z"
+  // M x y - установка координат карандаша
+  // h - горизональная линия x+10 (H - абсолютное значение 10)
+  // v - вертикальная линия y+10 (V - абсолютное значение 10)
+  // Z - линия в от последней точки до начальной
+
+  // получение пути
+  let scale_path = "";
+  let rect = document.getElementById("container");
+  let rect_style = getComputedStyle(rect);
+  let path_size = parseInt(rect_style.height,10);
+  
+  let margin_left_top = Math.trunc(path_size * 1/13 / 2);
+  path_size -= 2*margin_left_top;
+  scale_path = "M"+String(margin_left_top)+" "+String(margin_left_top)+
+  " h "+path_size+" v "+path_size+" h "+(-path_size)+" Z";
+  
+  // установка параметров для пути и svg
+  PATH.setAttribute('d', scale_path);
+  scale_path = "'"+scale_path+"'"
+  BLOCK.style.setProperty('--path', scale_path);
+}
+
 
 function rollTheDice() {
   let random_num1 = randomInteger(1, 6);
@@ -36,3 +63,7 @@ function rollTheDice() {
   BLOCK.style.setProperty('--distance', current_len);
   H.innerHTML = `offset-distance: ${ (current_len)}%;`;
 }
+
+window.onresize = function( event ) {
+  setScalablePath();
+};
