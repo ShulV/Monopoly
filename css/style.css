@@ -146,32 +146,22 @@ body {
     top:14%;
     left:14%;
     background-color:#192124;
+    overflow-y: scroll;
+}
+
+.chat-block p {
+    color: white;
+    font-size: 15px;
+    margin-left: 10px;
+    margin-top:15px;
 }
 
 .roll-dice-btn {
     width:144px;
     height: 72px;
     position: absolute;
-    top: 144px;
-    left: 144px;
-}
-#dice1-result-text {
-    width:144px;
-    height: 36px;
-    position: absolute;
-    top: 144px;
-    left: 432px;
-    color:white;
-    font-size:16px;
-}
-#dice2-result-text {
-    width:144px;
-    height: 36px;
-    position: absolute;
-    top: 180px;
-    left: 432px;
-    color:white;
-    font-size:16px;
+    top: 250px;
+    left: -250px;
 }
 
 .red_player, .green_player, .blue_player, .yellow_player, .purple_player {
@@ -207,3 +197,8 @@ body {
     offset-path: path(var(--path5));
     offset-distance: calc(var(--distance5, 50) * 1%);
 } 
+
+.red-text {
+    color:rgb(190, 20, 20)
+}
+

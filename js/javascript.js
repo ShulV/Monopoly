@@ -1,6 +1,6 @@
 
-var player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
-
+const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
+const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
 
 
 
@@ -68,7 +68,7 @@ class Player{
       this.near_right_wall = false;
       this.near_top_wall = true;
       this.near_bottom_wall = false;
-      let src = "images/" + String(this.color) + ".png";
+    //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.color);
       createPlayer(id);
     }
@@ -164,25 +164,18 @@ class Player{
     }
 
     rollTheDice(){
+        //получение двух случайных чисел
         let random_num1 = randomInteger(1, 6);
         let random_num2 = randomInteger(1, 6);
-        let result_msg = String(random_num1);
-        result_msg += " " + String(random_num2);
-        document.getElementById('dice1-result-text').textContent= "На 1-ом кубике выпало: " + String(random_num1);
-        document.getElementById('dice2-result-text').textContent= "На 2-ом кубике выпало: " + String(random_num2);
-        // Берём стили с помощью "getComputedStyle()", а не через "style", потому что, 
-        // на момент первого запуска, в "style" у BLOCK отсутствует значение "--distanceN"
+        //изменение параметров фишки (анимация)
         let current_len = +getComputedStyle(RED_PLAYER).getPropertyValue('--distance1');
-  
         current_len += random_num1 + random_num2; // % 100
-        // // Убираем "деление по модулю" из строки, что находиться выше, и используем 
-        // // его только там, где это необходимо. Например, для вывода в консоль:
-        console.log('Прогресс текущей игры:', current_len % 100);
-        // // Также это может быть полезным, для вычисления количества полных циклов:
-        console.log('Игра №:', Math.trunc(current_len / 100) + 1);
-
+        // console.log('Прогресс текущей игры:', current_len % 100);
+        // console.log('Игра №:', Math.trunc(current_len / 100) + 1);
         RED_PLAYER.style.setProperty('--distance1', current_len);
         // H.innerHTML = `offset-distance: ${ (current_len)}%;`;
+        //вывод в чат
+        addRollDiceMessage("ИМЯ ИГРОКА",class_color_name[0],random_num1,random_num2);
     }
 
   }
@@ -197,4 +190,14 @@ function startGame(){
     setScalablePath();
 }
 
-
+function addRollDiceMessage(player_name,color_class,num1,num2){
+    var par = document.createElement("p");
+    var name_text = document.createElement("span");
+    name_text.setAttribute("class",color_class);
+    var text = document.createTextNode(player_name);
+    name_text.appendChild(text);
+    par.appendChild(name_text);
+    text = document.createTextNode(" выбрасывает "+String(num1)+":"+String(num2));
+    par.appendChild(text);
+    document.getElementById('chat-block').appendChild(par);
+}
