@@ -64,6 +64,3 @@ function rollTheDice() {
   H.innerHTML = `offset-distance: ${ (current_len)}%;`;
 }
 
-window.onresize = function( event ) {
-  setScalablePath();
-};

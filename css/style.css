@@ -2,6 +2,19 @@ html {
     overflow: hidden;
 }
 
+:root {
+    --distance1: 0;
+    --distance2: 0;
+    --distance3: 0;
+    --distance4: 0;
+    --distance5: 0;
+    --path1: '';
+    --path2: '';
+    --path3: '';
+    --path4: '';
+    --path5: '';
+  }
+
 body {
     height:100%;
     width:100%;
@@ -36,6 +49,7 @@ body {
     height:90%;
     background-color: #fbffff;
     position: relative;
+    outline: 5px solid lime;
 }
 
 .play-cell {
@@ -159,3 +173,37 @@ body {
     color:white;
     font-size:16px;
 }
+
+.red_player, .green_player, .blue_player, .yellow_player, .purple_player {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    
+    transition: 2s ease;
+}
+.red_player{
+    offset-path: path(var(--path1));
+    offset-distance: calc(var(--distance1, 50) * 1%);
+}
+.green_player{
+    offset-path: path(var(--path2));
+    offset-distance: calc(var(--distance2, 50) * 1%);
+} 
+
+.blue_player{
+    offset-path: path(var(--path3));
+    offset-distance: calc(var(--distance3, 50) * 1%);
+}
+
+.yellow_player{
+    offset-path: path(var(--path4));
+    offset-distance: calc(var(--distance4, 50) * 1%);
+}
+
+.purple_player{
+    offset-path: path(var(--path5));
+    offset-distance: calc(var(--distance5, 50) * 1%);
+} 
