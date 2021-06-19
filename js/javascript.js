@@ -1,6 +1,10 @@
 
 const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
+const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
+"Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
+"Jackpot","American airlines","?","Lufthansa","British airways","Ford","McDonald's","BurgerKing","Rovio","KFC",
+"GoToJail","Hollday Inn","Radisson","?","Novotel","Land rover","Tax luxury","Apple","?","Nokia"]
 const percent_single_field = 2.2727;
 const percent_single_and_half_field = 3.4091;
 function setFieldParams(){
@@ -106,6 +110,11 @@ function randomInteger(min, max) {
     let rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
 }
+
+function div(val, by){
+    return (val - val % by) / by;
+}
+
 // функция выдает путь по квадрату относительно размера экрана пользователя
 function setScalablePath(){
     RED_PLAYER = document.querySelector('.red_player');
@@ -208,14 +217,55 @@ class Player{
         // if(random_sum == 12){
         //     if 
         // }
+        
+        // логика отслеживания прохода через углы, там движение на 1.5 ширины игрового поля
+        let cur_field = this.current_player.current_field;
+        let next_cur_field = cur_field +random_sum;
+        //если игрок начинает движение из любой угловой клетки
+        if ( cur_field == 1 || cur_field ==11 || cur_field ==21|| cur_field ==31){
+            if (random_sum < 10) {
+                current_len += percent_single_and_half_field + percent_single_field * (random_sum-1);
+            }
+            else if (random_sum == 10) {
+                current_len += 2*percent_single_and_half_field + percent_single_field * (random_sum-2);
+            }
+            else {
+                current_len += 3*percent_single_and_half_field + percent_single_field * (random_sum-3);
+            }
+            console.log("из угла");
+        }
+        else if( next_cur_field == 1 || next_cur_field ==11 || next_cur_field ==21|| next_cur_field ==31){
+            if (random_sum < 10) {
+                current_len += percent_single_and_half_field + percent_single_field * (random_sum-1);
+            }
+            else if (random_sum == 10) {
+                current_len += 2*percent_single_and_half_field + percent_single_field * (random_sum-2);
+            }
+            else {
+                current_len += 3*percent_single_and_half_field + percent_single_field * (random_sum-3);
+            }
+            console.log("в угол");
+        }
+        else if(Math.ceil((next_cur_field)/10) - Math.ceil(cur_field/10) > 0) {
+            current_len += 2*percent_single_and_half_field + percent_single_field * (random_sum-2);
+            console.log("переход");
+        }
+        else {
+            current_len += percent_single_field * random_sum;
+            console.log("нет перехода");
+        }
+
+
         this.current_player.current_field += random_sum ;
         this.current_player.current_field %= 40;
         if (this.current_player.current_field == 0) this.current_player.current_field = 1;
-        console.log("игрок на поле: " + this.current_player.current_field);
-        console.log(current_len);
-        current_len += random_num1 + random_num2; // % 100
-        console.log('Прогресс текущей игры:', current_len % 100);
-        console.log('Игра №:', Math.trunc(current_len / 100) + 1);
+
+
+        // console.log("current_field = ", cur_field);
+        // console.log("current_len = " + current_len);
+        // console.log("игрок на поле: " + this.current_player.current_field);
+        // console.log('Прогресс текущей игры:', current_len % 100);
+        // console.log('Игра №:', Math.trunc(current_len / 100) + 1);
         RED_PLAYER.style.setProperty('--distance1', current_len);
         //вывод в чат
         this.addRollDiceMessage(class_color_name[0],random_num1,random_num2);
@@ -227,7 +277,9 @@ class Player{
         var text = document.createTextNode(this.current_player.name);
         name_text.appendChild(text);
         par.appendChild(name_text);
-        let msg_text = " выбрасывает "+String(num1)+":"+String(num2) + " и попадает на поле " + this.current_player.current_field;
+        let field_num = this.current_player.current_field;
+        
+        let msg_text = " выбрасывает "+String(num1)+":"+String(num2) + " и попадает на поле '" + field_names[field_num-1] + "'";
         text = document.createTextNode(msg_text);
   
         par.appendChild(text);
