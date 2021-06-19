@@ -13,7 +13,7 @@ html {
     --path3: '';
     --path4: '';
     --path5: '';
-    --cell-size: 7.69230768% /* (100/11)% */
+    --cell-size: 7.69230768%; /* (100/11)% */
     --double-cell-size: 15.3846154% ; /* 2*(100/11)% */
   }
 
@@ -55,11 +55,6 @@ body {
 }
 
 .play-cell {
-    width:7.69230768%;
-    /* var(--cell-size); */
-    height: 7.69230768%;
-    /* var(--cell-size); */
-
     outline: 1px solid #293d44;
     display: flex;
     justify-content: center;
@@ -72,87 +67,10 @@ body {
     max-height: 100%;
 }
 
-.top-cell {
-    top:0;
-    width:7.69230768%;
-    /* var(--cell-size); */
-    height: 15.3846154% ;
-    /* var(--double-cell-size); */
-}
-.right-cell {
-    right:0;
-    width: 15.3846154% ;
-    /* var(--double-cell-size); */
-    height:7.69230768%;
-    /* var(--cell-size); */
-}
-.bottom-cell {
-    bottom:0;
-    width:7.69230768%;
-    /* var(--cell-size);; */
-    height: 15.3846154% ;
-    /* var(--double-cell-size); */
-}
-.left-cell {
-    left:0;
-    width: 15.3846154% ;
-    /* var(--double-cell-size); */
-    height:7.69230768%;
-    /* var(--cell-size); */
-}
-
-.square-cell {
-    width: 15.3846154% ;
-     /* var(--double-cell-size); */
-    height: 15.3846154% ;
-     /* var(--double-cell-size); */
-}
-
 .rot-270{
     transform: rotate(270deg);
 }
-/* TODO СДЕЛАТЬ JS ФУНКЦИЮ ДЛЯ УСТАНОВКИ ЭТИХ ПРАМЕТРОВ --- СМЕЩЕНИЕ 9.09090909%*/
-/* верхняя линия */
-.play-cell-2 {left:14%;}
-.play-cell-3 {left:22%;}
-.play-cell-4 {left:30%;}
-.play-cell-5 {left:38%;}
-.play-cell-6 {left:46%;}
-.play-cell-7 {left:54%;}
-.play-cell-8 {left:62%;}
-.play-cell-9 {left:70%;}
-.play-cell-10 {left:78%;}
-/* правая линия */
-.play-cell-12 {top:14%;}
-.play-cell-13 {top:22%;}
-.play-cell-14 {top:30%;}
-.play-cell-15 {top:38%;}
-.play-cell-16 {top:46%;}
-.play-cell-17 {top:54%;}
-.play-cell-18 {top:62%;}
-.play-cell-19 {top:70%;}
-.play-cell-20 {top:78%;}
-/* нижняя линия */
-.play-cell-22 {right:14%;}
-.play-cell-23 {right:22%;}
-.play-cell-24 {right:30%;}
-.play-cell-25 {right:38%;}
-.play-cell-26 {right:46%;}
-.play-cell-27 {right:54%;}
-.play-cell-28 {right:62%;}
-.play-cell-29 {right:70%;}
-.play-cell-30 {right:78%;}
-/* левая линия */
-.play-cell-32 {bottom:14%;}
-.play-cell-33 {bottom:22%;}
-.play-cell-34 {bottom:30%;}
-.play-cell-35 {bottom:38%;}
-.play-cell-36 {bottom:46%;}
-.play-cell-37 {bottom:54%;}
-.play-cell-38 {bottom:62%;}
-.play-cell-39 {bottom:70%;}
-.play-cell-40 {bottom:78%;}
-.play-cell-41 {bottom:78%;}
+
 
 .chat-block{
     height: 72%;
