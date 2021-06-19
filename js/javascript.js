@@ -1,7 +1,8 @@
 
 const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
-
+const percent_single_field = 2.2727;
+const percent_single_and_half_field = 3.4091;
 function setFieldParams(){
     // 1,11,21,31 - угловые поля
     let root = document.querySelector(':root');
@@ -142,10 +143,7 @@ class Player{
       this.place = 0;
       this.number = number;
       this.color = player_colors[number];
-      this.near_left_wall = true;
-      this.near_right_wall = false;
-      this.near_top_wall = true;
-      this.near_bottom_wall = false;
+      this.current_field = 1;
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.color);
       createPlayer(id);
@@ -200,18 +198,40 @@ class Player{
     }
 
     rollTheDice(){
+
         //получение двух случайных чисел
         let random_num1 = randomInteger(1, 6);
         let random_num2 = randomInteger(1, 6);
+        let random_sum = random_num1 + random_num2;
         //изменение параметров фишки (анимация)
         let current_len = +getComputedStyle(RED_PLAYER).getPropertyValue('--distance1');
+        // if(random_sum == 12){
+        //     if 
+        // }
+        this.current_player.current_field += random_sum ;
+        this.current_player.current_field %= 40;
+        if (this.current_player.current_field == 0) this.current_player.current_field = 1;
+        console.log("игрок на поле: " + this.current_player.current_field);
+        console.log(current_len);
         current_len += random_num1 + random_num2; // % 100
-        // console.log('Прогресс текущей игры:', current_len % 100);
-        // console.log('Игра №:', Math.trunc(current_len / 100) + 1);
+        console.log('Прогресс текущей игры:', current_len % 100);
+        console.log('Игра №:', Math.trunc(current_len / 100) + 1);
         RED_PLAYER.style.setProperty('--distance1', current_len);
-        // H.innerHTML = `offset-distance: ${ (current_len)}%;`;
         //вывод в чат
-        addRollDiceMessage("ИМЯ ИГРОКА",class_color_name[0],random_num1,random_num2);
+        this.addRollDiceMessage(class_color_name[0],random_num1,random_num2);
+    }
+    addRollDiceMessage(color_class,num1,num2){
+        var par = document.createElement("p");
+        var name_text = document.createElement("span");
+        name_text.setAttribute("class",color_class);
+        var text = document.createTextNode(this.current_player.name);
+        name_text.appendChild(text);
+        par.appendChild(name_text);
+        let msg_text = " выбрасывает "+String(num1)+":"+String(num2) + " и попадает на поле " + this.current_player.current_field;
+        text = document.createTextNode(msg_text);
+  
+        par.appendChild(text);
+        document.getElementById('chat-block').appendChild(par);
     }
 
   }
@@ -227,14 +247,4 @@ function startGame(){
     setFieldParams();
 }
 
-function addRollDiceMessage(player_name,color_class,num1,num2){
-    var par = document.createElement("p");
-    var name_text = document.createElement("span");
-    name_text.setAttribute("class",color_class);
-    var text = document.createTextNode(player_name);
-    name_text.appendChild(text);
-    par.appendChild(name_text);
-    text = document.createTextNode(" выбрасывает "+String(num1)+":"+String(num2));
-    par.appendChild(text);
-    document.getElementById('chat-block').appendChild(par);
-}
+
