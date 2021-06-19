@@ -216,7 +216,13 @@ body {
     background-color:#192124;
     overflow-y: scroll;
     outline: 2px solid #192124;;
+
+    transition-duration: 3s;
 }
+.chat-block::-webkit-scrollbar {width: 15px;height: 15px;}
+::-webkit-scrollbar-track-piece {background:rgba(0,0,0,0);}
+::-webkit-scrollbar-thumb:vertical {height:10px;background:#545861;}
+::-webkit-scrollbar-thumb:vertical:hover {background:#7f8591;}
 
 .chat-block p {
     color: white;

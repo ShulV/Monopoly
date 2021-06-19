@@ -110,10 +110,10 @@ function randomInteger(min, max) {
     let rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
 }
-
-function div(val, by){
-    return (val - val % by) / by;
+function doScrollDown(scroll_block_name) {
+    document.getElementById(scroll_block_name).scrollTop = 9999;
 }
+
 
 // функция выдает путь по квадрату относительно размера экрана пользователя
 function setScalablePath(){
@@ -206,7 +206,7 @@ class Player{
         }
     }
 
-    rollTheDice(){
+    rollTheDice(){ //TODO исправить, чтобы накопление погрешности не портило позиционирование
 
         //получение двух случайных чисел
         let random_num1 = randomInteger(1, 6);
@@ -284,6 +284,7 @@ class Player{
   
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
+        doScrollDown('chat-block');
     }
 
   }
