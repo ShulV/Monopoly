@@ -2,7 +2,11 @@
 const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
 
-
+function setFieldParams(){
+    let root = document.querySelector(':root');
+    let cell_size = +getComputedStyle(root).getPropertyValue('--cell-size');
+    alert(cell_size);
+}
 
 function createPlayer(id){
     var circle = document.createElement("div");
@@ -42,7 +46,7 @@ function setScalablePath(){
     let field_size = parseInt(rect_style.height,10);
     
     let margin_left_top = Math.trunc(field_size * 0.071);//
-    alert(margin_left_top);
+
     let path_size = field_size-2*margin_left_top;//14% ширина/высота углового поля
     
     scale_path = "M"+String(margin_left_top)+" "+String(margin_left_top)+
@@ -52,7 +56,6 @@ function setScalablePath(){
     // PATH.setAttribute('d', scale_path);
     scale_path = "'"+scale_path+"'"
     RED_PLAYER.style.setProperty('--path1', scale_path);
-    alert(scale_path);
   }
 
 
@@ -81,48 +84,6 @@ class Player{
 
     }
     
-
-    // movePlayer(cell_number){
-    //     let player_id = this.color
-        
-    //     for(let i=0;i < cell_number;i++) {
-    //         let player_x = document.getElementById(player_id).offsetLeft;
-    //         let player_y = document.getElementById(player_id).offsetTop;
-    //         //если игрок в верхней линии клеток, но не в последней
-    //         if (this.near_top_wall && !this.near_right_wall){
-    //             let player_xn = player_x + 72;
-    //             this.changePositionX(player_id, player_xn);
-    //             if(player_xn > 72*9) this.near_right_wall = true;    
-    //             else if(player_xn > 72) this.near_left_wall = false;   
-    //             continue;
-    //         }
-    //         //если игрок в правой линии клеток, но не в последней
-    //         if (this.near_right_wall && !this.near_bottom_wall){
-    //             let player_yn = player_y + 72;
-    //             this.changePositionY(player_id, player_yn);
-    //             if(player_yn > 72*9) this.near_bottom_wall = true;    
-    //             else if(player_yn > 72) this.near_top_wall = false;                 
-    //             continue;
-    //         }
-    //         //если игрок в нижней линии клеток, но не в последней
-    //         if (this.near_bottom_wall && !this.near_left_wall){
-    //             let player_xn = player_x - 72;
-    //             this.changePositionX(player_id, player_xn);
-    //             if(player_xn < 72) this.near_left_wall = true;    
-    //             else if(player_xn < 72*9) this.near_right_wall = false;                 
-    //             continue;
-    //         }
-    //         //если игрок в ЛЕВОЙ линии клеток, но не в последней
-    //         if (this.near_left_wall && !this.near_top_wall){
-    //             let player_yn = player_y - 72;
-    //             this.changePositionY(player_id, player_yn);
-    //             if(player_yn < 72) this.near_top_wall = true;    
-    //             else if(player_yn < 72*9) this.near_bottom_wall = false;                 
-    //             continue;
-    //         }
-    //     }
-                
-    // }
   
   }
 
@@ -188,6 +149,7 @@ function createGame(){
 function startGame(){
     createGame();
     setScalablePath();
+    setFieldParams();
 }
 
 function addRollDiceMessage(player_name,color_class,num1,num2){

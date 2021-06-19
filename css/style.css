@@ -13,6 +13,8 @@ html {
     --path3: '';
     --path4: '';
     --path5: '';
+    --cell-size: 7.69230768% /* (100/11)% */
+    --double-cell-size: 15.3846154% ; /* 2*(100/11)% */
   }
 
 body {
@@ -53,8 +55,10 @@ body {
 }
 
 .play-cell {
-    width: 8%;
-    height: 8%;
+    width:7.69230768%;
+    /* var(--cell-size); */
+    height: 7.69230768%;
+    /* var(--cell-size); */
 
     outline: 1px solid #293d44;
     display: flex;
@@ -70,33 +74,44 @@ body {
 
 .top-cell {
     top:0;
-    width:8%;
-    height:14%;
+    width:7.69230768%;
+    /* var(--cell-size); */
+    height: 15.3846154% ;
+    /* var(--double-cell-size); */
 }
 .right-cell {
     right:0;
-    width:14%;
-    height:8;
+    width: 15.3846154% ;
+    /* var(--double-cell-size); */
+    height:7.69230768%;
+    /* var(--cell-size); */
 }
 .bottom-cell {
     bottom:0;
-    width:8%;
-    height:14%;
+    width:7.69230768%;
+    /* var(--cell-size);; */
+    height: 15.3846154% ;
+    /* var(--double-cell-size); */
 }
 .left-cell {
     left:0;
-    width:14%;
-    height:8;
+    width: 15.3846154% ;
+    /* var(--double-cell-size); */
+    height:7.69230768%;
+    /* var(--cell-size); */
 }
 
 .square-cell {
-    width: 14%;
-    height: 14%;
+    width: 15.3846154% ;
+     /* var(--double-cell-size); */
+    height: 15.3846154% ;
+     /* var(--double-cell-size); */
 }
 
 .rot-270{
     transform: rotate(270deg);
 }
+/* TODO СДЕЛАТЬ JS ФУНКЦИЮ ДЛЯ УСТАНОВКИ ЭТИХ ПРАМЕТРОВ --- СМЕЩЕНИЕ 9.09090909%*/
 /* верхняя линия */
 .play-cell-2 {left:14%;}
 .play-cell-3 {left:22%;}
