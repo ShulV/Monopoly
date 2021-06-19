@@ -9,7 +9,8 @@ function setFieldParams(){
     let float_cell_size = parseFloat(cell_size);
     let left_offset_cell_size = 2*float_cell_size;
     let top_offset_cell_size = 2*float_cell_size;
-    // play-cell-1, play-cell-2, ...
+
+    // play-cell-1, play-cell-2, ..
     for(let i=1; i<41;i++){
         let cell_class_name = "play-cell-" + String(i)
         let cell_elem = document.getElementById(cell_class_name);
@@ -39,12 +40,15 @@ function setFieldParams(){
                 continue; 
             } 
         }
+
+        cell_elem.style.width = String(float_cell_size*2)+"%";
+        cell_elem.style.height = String(float_cell_size)+"%";
+
         // верхняя линия
         if (i>1 && i<11 ){
-            cell_elem.style.top = "0";
+            cell_elem.style.top = String(float_cell_size*2)+"%";
+            console.log(String(float_cell_size*2)+"%");
             cell_elem.style.left = String(left_offset_cell_size)+"%";
-            cell_elem.style.width = String(float_cell_size)+"%";
-            cell_elem.style.height = String(float_cell_size*2)+"%";
             left_offset_cell_size += float_cell_size;
             continue; 
         }
@@ -52,18 +56,14 @@ function setFieldParams(){
         if (i>11 && i<21 ){
             cell_elem.style.right = "0";
             cell_elem.style.top = String(top_offset_cell_size)+"%";
-            cell_elem.style.width = String(float_cell_size*2)+"%";
-            cell_elem.style.height = String(float_cell_size)+"%";
             top_offset_cell_size += float_cell_size;
             continue; 
         }
         // нижняя линия
         if (i>21 && i<31 ){
-            cell_elem.style.bottom = "0";
+            cell_elem.style.bottom = "-"+String(float_cell_size)+"%";
             left_offset_cell_size -= float_cell_size;
             cell_elem.style.left = String(left_offset_cell_size)+"%";
-            cell_elem.style.width = String(float_cell_size)+"%";
-            cell_elem.style.height = String(float_cell_size*2)+"%";
             continue;             
         }
         // левая линия
@@ -71,12 +71,16 @@ function setFieldParams(){
             cell_elem.style.left = "0";
             top_offset_cell_size -= float_cell_size;
             cell_elem.style.top = String(top_offset_cell_size)+"%";
-            cell_elem.style.width = String(float_cell_size*2)+"%";
-            cell_elem.style.height = String(float_cell_size)+"%";
             continue; 
         }
         
     }
+    // chat-block
+    let chat_block = document.getElementById('chat-block');
+    chat_block.style.top = String(float_cell_size*2)+"%";
+    chat_block.style.left = String(float_cell_size*2)+"%";
+    chat_block.style.height = String(float_cell_size*9)+"%";
+    chat_block.style.width = String(float_cell_size*9)+"%";
 }
 
 function createPlayer(id){
@@ -223,14 +227,14 @@ function startGame(){
     setFieldParams();
 }
 
-// function addRollDiceMessage(player_name,color_class,num1,num2){
-//     var par = document.createElement("p");
-//     var name_text = document.createElement("span");
-//     name_text.setAttribute("class",color_class);
-//     var text = document.createTextNode(player_name);
-//     name_text.appendChild(text);
-//     par.appendChild(name_text);
-//     text = document.createTextNode(" выбрасывает "+String(num1)+":"+String(num2));
-//     par.appendChild(text);
-//     document.getElementById('chat-block').appendChild(par);
-// }
+function addRollDiceMessage(player_name,color_class,num1,num2){
+    var par = document.createElement("p");
+    var name_text = document.createElement("span");
+    name_text.setAttribute("class",color_class);
+    var text = document.createTextNode(player_name);
+    name_text.appendChild(text);
+    par.appendChild(name_text);
+    text = document.createTextNode(" выбрасывает "+String(num1)+":"+String(num2));
+    par.appendChild(text);
+    document.getElementById('chat-block').appendChild(par);
+}

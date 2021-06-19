@@ -13,14 +13,15 @@ html {
     --path3: '';
     --path4: '';
     --path5: '';
-    --cell-size: 7.69230768%; /* (100/11)% */
-    --double-cell-size: 15.3846154% ; /* 2*(100/11)% */
+    --cell-size: 7.692%; /* (100/11)% */
+   
   }
 
 body {
     height:100%;
     width:100%;
     background-color:#000000;
+    
 }
 
 .game {
@@ -55,31 +56,166 @@ body {
 }
 
 .play-cell {
-    outline: 1px solid #293d44;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    outline: 2px solid #778488;
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
 }
 
+.play-cell div {
+    background: center/contain no-repeat; 
+    height: 80%;
+    width:80%;
+}
+
+
 .play-cell img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90%;
+    max-height: 90%;
+}
+.play-cell-1 div {
+    background-image: url(../images/brands/special/start.png);
+    height: 100%;
+    width:100%;
+}
+.play-cell-2 div {
+    background-image: url(../images/brands/1/chanel.svg);
+}
+.play-cell-3 div {
+    background-image: url(../images/brands/special/chance_rotated_right.png);
+}
+.play-cell-4 div {
+    background-image: url(../images/brands/1/hugo_boss.svg);
+}
+.play-cell-5 div {
+    background-image: url(../images/brands/special/tax_income.png);
+}
+.play-cell-6 div {
+    background-image: url(../images/brands/0/audi.svg);
+}
+.play-cell-7 div {
+    background-image: url(../images/brands/2/adidas.svg);
+}
+.play-cell-8 div {
+    background-image: url(../images/brands/special/chance_rotated_right.png);
+}
+.play-cell-9 div {
+    background-image: url(../images/brands/2/puma.svg);
+}
+.play-cell-10 div {
+    background-image: url(../images/brands/2/lacoste.svg);
+}
+.play-cell-11 div {
+    background-image: url(../images/brands/special/jail.png);
+    height: 100%;
+    width:100%;
+}
+.play-cell-12 div {
+    background-image: url(../images/brands/3/vk.svg);
+}
+.play-cell-13 div {
+    background-image: url(../images/brands/9/rockstar_games.svg);
+}
+.play-cell-14 div {
+    background-image: url(../images/brands/3/facebook.svg);
+}
+.play-cell-15 div {
+    background-image: url(../images/brands/3/twitter.svg);
+}
+.play-cell-16 div {
+    background-image: url(../images/brands/0/mercedes.svg);
+}
+.play-cell-17 div {
+    background-image: url(../images/brands/4/coca_cola.svg);
+}
+.play-cell-18 div {
+    background-image: url(../images/brands/special/chance_rotated_right.png);
+}
+.play-cell-19 div {
+    background-image: url(../images/brands/4/pepsi.svg);
+}
+.play-cell-20 div {
+    background-image: url(../images/brands/4/fanta.svg);
+}
+.play-cell-21 div {
+    background-image: url(../images/brands/special/jackpot.svg);
+    height: 100%;
+    width:100%;
+}
+.play-cell-22 div {
+    background-image: url(../images/brands/5/american_airlines.svg);
+}
+.play-cell-23 div {
+    background-image: url(../images/brands/special/chance_rotated_right.png);
+}
+.play-cell-24 div {
+    background-image: url(../images/brands/5/lufthansa.svg);
+}
+.play-cell-25 div {
+    background-image: url(../images/brands/5/british_airways.svg);
+}
+.play-cell-26 div {
+    background-image: url(../images/brands/0/ford.svg);
+}
+.play-cell-27 div {
+    background-image: url(../images/brands/6/mcdonalds.svg);
+}
+.play-cell-28 div {
+    background-image: url(../images/brands/6/burger_king.svg);
+}
+.play-cell-29 div {
+    background-image: url(../images/brands/9/rovio.svg);
+}
+.play-cell-30 div {
+    background-image: url(../images/brands/6/kfc.svg);
+}
+.play-cell-31 div {
+    background-image: url(../images/brands/special/goToJail.png);
+    height: 100%;
+    width:100%;
+}
+.play-cell-32 div {
+    background-image: url(../images/brands/7/holiday_inn.svg);
+}
+.play-cell-33 div {
+    background-image: url(../images/brands/7/radisson_blu.svg);
+}
+.play-cell-34 div {
+    background-image: url(../images/brands/special/chance_rotated_left.png);
+}
+.play-cell-35 div {
+    background-image: url(../images/brands/7/novotel.svg);
+}
+.play-cell-36 div {
+    background-image: url(../images/brands/0/land_rover.svg);
+}
+.play-cell-37 div {
+    background-image: url(../images/brands/special/tax_luxury.png);
+}
+.play-cell-38 div {
+    background-image: url(../images/brands/8/apple.svg);
+}
+.play-cell-39 div {
+    background-image: url(../images/brands/special/chance_rotated_left.png);
+}
+.play-cell-40 div {
+    background-image: url(../images/brands/8/nokia.svg);
 }
 
 .rot-270{
     transform: rotate(270deg);
+    transform-origin: top left;
 }
 
 
 .chat-block{
-    height: 72%;
-    width:72%;
     position:absolute;
-    top:14%;
-    left:14%;
     background-color:#192124;
     overflow-y: scroll;
+    outline: 2px solid #192124;;
 }
 
 .chat-block p {
@@ -95,6 +231,7 @@ body {
     position: absolute;
     top: 250px;
     left: -250px;
+    
 }
 
 .red_player, .green_player, .blue_player, .yellow_player, .purple_player {
@@ -135,3 +272,5 @@ body {
     color:rgb(190, 20, 20)
 }
 
+
+/* background: center/contain no-repeat; */
