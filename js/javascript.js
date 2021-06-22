@@ -1,5 +1,5 @@
-const player_bg_colors = ["#d32020","#07b354","#","#","#",];
-const player_border_colors = ["#862a2a","#177842","#","#","#",]
+const player_bg_colors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
+const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",]
 const players_colors = ["red","green","blue","purple","yellow"];
 const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
@@ -216,10 +216,10 @@ class Game {
         current_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
         player.style.setProperty('--distance'+(player_number+1), current_len);
         
-        this.addRollDiceMessage(class_color_name[0],random_num1,random_num2);
+        this.addRollDiceMessage(class_color_name[this.current_player.number],random_num1,random_num2);
 
-        let cur_player = this.players_queue.pop();
-        this.players_queue.unshift(cur_player);
+        this.current_player = this.players_queue.pop();
+        this.players_queue.unshift(this.current_player);
         console.log(this.players_queue);
     }
     addRollDiceMessage(color_class,num1,num2){
@@ -251,10 +251,10 @@ function createGame(player_num,player_data){
 }
 
 function startGame(){
-    let player_num = 2;
-    let player_data = [["Victor",15000,0],["Ilon",15000,1]];
+    let player_num = 3;
+    let player_data = [["Victor",15000,0],["Ilon",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(player_num, player_data);
-    setScalablePath(2);
+    setScalablePath(player_num);
     setFieldParams();
 }
 

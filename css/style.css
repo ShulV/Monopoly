@@ -271,5 +271,20 @@ body {
     color:rgb(190, 20, 20)
 }
 
+.green-text {
+    color:#177842;
+}
+
+.blue-text {
+    color:#2475b3;
+}
+
+.purple_text {
+    color: #6c1c9e;
+}
+
+.yellow_text {
+    color: #9fa127;
+}
 
 /* background: center/contain no-repeat; */
