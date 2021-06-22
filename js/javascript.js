@@ -1,4 +1,5 @@
-
+const player_bg_colors = ["#d32020","#07b354","#","#","#",];
+const player_border_colors = ["#862a2a","#177842","#","#","#",]
 const players_colors = ["red","green","blue","purple","yellow"];
 const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
@@ -58,7 +59,6 @@ function setFieldParams(){
         // верхняя линия
         if (i>1 && i<11 ){
             cell_elem.style.top = String(float_cell_size*2)+"%";
-            console.log(String(float_cell_size*2)+"%");
             cell_elem.style.left = String(left_offset_cell_size)+"%";
             left_offset_cell_size += float_cell_size;
             continue; 
@@ -94,16 +94,16 @@ function setFieldParams(){
     chat_block.style.width = String(float_cell_size*9)+"%";
 }
 
-function createPlayer(id){
+function createPlayer(id,player_number){
     var circle = document.createElement("div");
     circle.style.height = "25px";
     circle.style.width = "25px";
     circle.style.position = "absolute";
     circle.style.left = "0px";
     circle.style.top = "0px";
-    circle.style.border = " 2px solid #862a2a"
+    circle.style.border = " 2px solid " + player_border_colors[player_number];
     circle.style.borderRadius = "50%";
-    circle.style.background = "#d32020";
+    circle.style.background = player_bg_colors[player_number];
     // circle.style.boxShadow = "20px 20px 50px 0px rgba(0, 0, 0, 1);"
     circle.setAttribute("id",id);
     circle.setAttribute("class",id);
@@ -126,7 +126,6 @@ function setScalablePath(player_num){
     let players = [];
     for(let i=0;i<player_num;i++){
         players[i] = document.querySelector('.'+players_ids[i]);
-        alert(players[i]);
     // "M10 10 h 180 v 180 h -180 Z"
     // M x y - установка координат карандаша
     // h - горизональная линия x+10 (H - абсолютное значение 10)
@@ -168,7 +167,7 @@ class Player{
       this.fields_passed_number = 0;
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.id);
-      createPlayer(id);
+      createPlayer(id,number);
     }
     
     changePositionX(player_id, x){
@@ -185,7 +184,13 @@ class Game {
     constructor(player_number,player_list) {
         this.player_number = player_number;
         this.player_list = player_list;
-        this.current_player = this.player_list[0];       
+        this.current_player = this.player_list[player_number-1]; 
+        this.players_queue = []; //очередь игроков  
+        for(let i=0;i<player_number;i++){
+            this.players_queue.unshift(player_list[i]);
+        }
+        console.log(this.players_queue);
+         
       }
       
 
@@ -212,6 +217,10 @@ class Game {
         player.style.setProperty('--distance'+(player_number+1), current_len);
         
         this.addRollDiceMessage(class_color_name[0],random_num1,random_num2);
+
+        let cur_player = this.players_queue.pop();
+        this.players_queue.unshift(cur_player);
+        console.log(this.players_queue);
     }
     addRollDiceMessage(color_class,num1,num2){
         var par = document.createElement("p");
@@ -236,7 +245,6 @@ function createGame(player_num,player_data){
     let players = [];
     for(let i=0;i<player_num;i++){
         players[i] = new Player(player_data[i][0],player_data[i][1],player_data[i][2]);
-        console.log(players[i]);
     }
     
     game = new Game(player_num,players);
