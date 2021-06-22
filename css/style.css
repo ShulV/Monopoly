@@ -9,10 +9,6 @@ html {
     --distance4: 0;
     --distance5: 0;
     --path1: '';
-    --path2: '';
-    --path3: '';
-    --path4: '';
-    --path5: '';
     --cell-size: 7.692%; /* (100/11)% */
    
   }
@@ -249,28 +245,25 @@ body {
     left: 0%;
     
     transition: 2s ease;
+
+    offset-path: path(var(--path1));
 }
 .red_player{
-    offset-path: path(var(--path1));
     offset-distance: calc(var(--distance1, 50) * 1%);
 }
 .green_player{
-    offset-path: path(var(--path2));
     offset-distance: calc(var(--distance2, 50) * 1%);
 } 
 
 .blue_player{
-    offset-path: path(var(--path3));
     offset-distance: calc(var(--distance3, 50) * 1%);
 }
 
 .yellow_player{
-    offset-path: path(var(--path4));
     offset-distance: calc(var(--distance4, 50) * 1%);
 }
 
 .purple_player{
-    offset-path: path(var(--path5));
     offset-distance: calc(var(--distance5, 50) * 1%);
 } 
 

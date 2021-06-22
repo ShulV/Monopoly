@@ -1,6 +1,6 @@
 
-
-const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
+const players_colors = ["red","green","blue","purple","yellow"];
+const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
 const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
 "Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
@@ -122,8 +122,11 @@ function doScrollDown(scroll_block_name) {
 }
 
 // функция выдает путь по квадрату относительно размера экрана пользователя
-function setScalablePath(){
-    RED_PLAYER = document.querySelector('.red_player');
+function setScalablePath(player_num){
+    let players = [];
+    for(let i=0;i<player_num;i++){
+        players[i] = document.querySelector('.'+players_ids[i]);
+        alert(players[i]);
     // "M10 10 h 180 v 180 h -180 Z"
     // M x y - установка координат карандаша
     // h - горизональная линия x+10 (H - абсолютное значение 10)
@@ -134,7 +137,7 @@ function setScalablePath(){
     let scale_path = "";
     let rect = document.getElementById("play-field");
     let rect_style = getComputedStyle(rect);
-    let field_size = parseInt(rect_style.height,10);
+    let field_size = parseInt(rect_style.height);
     
     let margin_left_top = Math.trunc(field_size * 0.071);//
 
@@ -145,9 +148,11 @@ function setScalablePath(){
     
     // установка параметров для пути и svg
     // PATH.setAttribute('d', scale_path);
-    scale_path = "'"+scale_path+"'"
-    RED_PLAYER.style.setProperty('--path1', scale_path);
-}
+    scale_path = "'"+scale_path+"'";
+    players[i].style.setProperty('--path1', scale_path);
+    };
+    
+};
 
 class Player{
 
@@ -156,12 +161,13 @@ class Player{
       this.money = money;
       this.place = 0;
       this.number = number;
-      this.color = player_colors[number];
+      this.color = players_colors[number];
+      this.id = players_ids[number];
       this.current_field = 1;
       this.current_lap = 0;
       this.fields_passed_number = 0;
     //   let src = "images/" + String(this.color) + ".png";
-      let id = String(this.color);
+      let id = String(this.id);
       createPlayer(id);
     }
     
@@ -189,11 +195,13 @@ class Game {
         let random_num2 = randomInteger(1, 6);
         let random_sum = random_num1 + random_num2;
 
+        let player_number = this.current_player.number;
         this.current_player.fields_passed_number += random_sum;
         this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
 
         //изменение параметров фишки (анимация)
-        let current_len = +getComputedStyle(RED_PLAYER).getPropertyValue('--distance1');
+        let player = document.querySelector('.'+players_ids[player_number]);
+        let current_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
         
         this.current_player.current_field += random_sum ;
         this.current_player.current_field %= 40;
@@ -201,19 +209,7 @@ class Game {
         let cur_field = this.current_player.current_field;
 
         current_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
-        console.log("Круг*100: "+this.current_player.current_lap*100);
-        console.log("Сдвиг от начала (без 100): "+percent_shift[cur_field-1]);
-        console.log("Поле: " + (cur_field-1));
-        console.log('Круг №:'+ this.current_player.current_lap);
-        console.log("current_len: "+current_len);
-        console.log("______________");
-        // console.log("start-поле: №" + cur_field + "; finish-поле: №" + next_cur_field);
-        // console.log("current_field = ", cur_field);
-        // console.log("current_len = " + current_len);
-        // console.log("Игрок на поле: " + this.current_player.current_field);
-        // console.log('Прогресс текущей игры:', current_len % 100);
-        
-        RED_PLAYER.style.setProperty('--distance1', current_len);
+        player.style.setProperty('--distance'+(player_number+1), current_len);
         
         this.addRollDiceMessage(class_color_name[0],random_num1,random_num2);
     }
@@ -240,16 +236,17 @@ function createGame(player_num,player_data){
     let players = [];
     for(let i=0;i<player_num;i++){
         players[i] = new Player(player_data[i][0],player_data[i][1],player_data[i][2]);
+        console.log(players[i]);
     }
     
     game = new Game(player_num,players);
 }
 
 function startGame(){
-    let player_num = 1;
-    let player_data = [["Victor",15000,0],];
+    let player_num = 2;
+    let player_data = [["Victor",15000,0],["Ilon",15000,1]];
     createGame(player_num, player_data);
-    setScalablePath();
+    setScalablePath(2);
     setFieldParams();
 }
 
