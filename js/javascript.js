@@ -1,4 +1,5 @@
 
+
 const player_colors = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
 const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
@@ -181,33 +182,6 @@ class Game {
         this.current_player = this.player_list[0];       
       }
       
-    create_asset_fields(){
-        let x = 0;
-        let y = 0;
-        let asset_field_id;
-        for(let i=1;i<=9;i++){
-            asset_field_id = "play-cell-"+String(i);
-            document.getElementById(asset_field_id).style.left = (i-1)*72+"px";
-            //document.getElementById(asset_field_id).textContent = i;
-        }
-        for(let i=1;i<=9;i++){
-            asset_field_id = "play-cell-"+String(i+9);
-            document.getElementById(asset_field_id).style.top = (i-1)*72+"px";
-            document.getElementById(asset_field_id).style.left = 720-72+"px";
-            //document.getElementById(asset_field_id).textContent = i+9;
-        }
-        for(let i=1;i<=9;i++){
-            asset_field_id = "play-cell-"+String(i+18);
-            document.getElementById(asset_field_id).style.top = 720-72+"px";
-            document.getElementById(asset_field_id).style.left = 720-72-(i-1)*72+"px";
-            //document.getElementById(asset_field_id).textContent = i+18;
-        }
-        for(let i=1;i<=9;i++){
-            asset_field_id = "play-cell-"+String(i+27);
-            document.getElementById(asset_field_id).style.top = 720-72-(i-1)*72+"px";
-            //document.getElementById(asset_field_id).textContent = i+27;
-        }
-    }
 
     rollTheDice(){ //TODO исправить, чтобы накопление погрешности не портило позиционирование
         //получение двух случайных чисел
