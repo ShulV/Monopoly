@@ -262,13 +262,19 @@ class Game {
 
   }
 
-function createGame(){
-    player1 = new Player("Виктор",15000,0);
-    game = new Game(1,[player1]);
+function createGame(player_num,player_data){
+    let players = [];
+    for(let i=0;i<player_num;i++){
+        players[i] = new Player(player_data[i][0],player_data[i][1],player_data[i][2]);
+    }
+    
+    game = new Game(player_num,players);
 }
 
 function startGame(){
-    createGame();
+    let player_num = 1;
+    let player_data = [["Victor",15000,0],];
+    createGame(player_num, player_data);
     setScalablePath();
     setFieldParams();
 }
