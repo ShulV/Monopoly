@@ -1,0 +1,67 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	background-image: url(http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/blackorchid.png);
+  overflow: hidden;
+}
+
+.container {
+	position: relative;
+	margin: 200px auto;
+	width: 300px;
+	height: 300px;
+	perspective: 500px;
+  
+}
+
+.cube {
+	width: inherit;
+	height: inherit;
+	transform-style: preserve-3d;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+.cube div {
+  background-image: url("../zZyU3j9KF4A.jpg");
+  background-size: cover;
+}
+
+.side {
+	position: absolute;
+	width: inherit;
+	height: inherit;
+	border: 5px solid rgb(223, 27, 27);
+	font: normal 180px Arial;
+	text-align: center;
+	line-height: 300px;
+	color: #FFF;
+
+  backface-visibility: hidden;
+}
+
+.front {
+	transform: translateZ(150px);
+}
+
+.back {
+	transform: rotateY(180deg) translateZ(150px);
+}
+
+.right {
+	transform: rotateY(90deg) translateZ(150px);
+}
+
+.left {
+	transform: rotateY(-90deg) translateZ(150px);
+}
+
+.top {
+	transform: rotateX(90deg) translateZ(150px);
+}
+
+.bottom {
+	transform: rotateX(-90deg) translateZ(150px);
+}
