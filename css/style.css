@@ -51,6 +51,12 @@ body {
     align-items:center;
     flex-direction: column;
 }
+
+.player-block span {
+    color: #FFF;
+    font-size: 20px;
+}
+
 .player-block .name-text {
     color:#FFF;
     font-size: 20px;
@@ -63,10 +69,12 @@ body {
 
 .player-block .money-text::before {
     content: "$";
+    color:#838383;
 }
 
 .player-block .money-text::after {
     content: "k";
+    color:#838383;
 }
 
 .game-block {

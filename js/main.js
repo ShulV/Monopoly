@@ -2,6 +2,7 @@ const player_bg_colors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
 const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",]
 const players_colors = ["red","green","blue","purple","yellow"];
 const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
+const player_prop_block_ids = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",]
 const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
 const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
 "Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
@@ -20,7 +21,7 @@ function addPlayersBlock(player_number, player_list){
     for(let i=0; i<player_number;i++){
         let div = document.createElement("div");
         div.setAttribute("class","player-block");
-        
+        div.setAttribute("id",player_prop_block_ids[i]);
         //name
         let name_span = document.createElement("span");
         name_span.setAttribute("class","name-text");
@@ -33,11 +34,38 @@ function addPlayersBlock(player_number, player_list){
         let money_text = document.createTextNode(player_list[i].money);
         money_span.appendChild(money_text);
         div.appendChild(money_span);
-        //
-        
+        //current field
+        let cur_field_span = document.createElement("span");
+        cur_field_span.setAttribute("class","cur-field-text");
+        let field_num = player_list[i].current_field;
+        let cur_field_text = document.createTextNode("Поле: " + field_names[field_num-1] + " (" + field_num + ")");
+        cur_field_span.appendChild(cur_field_text);
+        div.appendChild(cur_field_span);
+        //current lap
+        let cur_lap_span = document.createElement("span");
+        cur_lap_span.setAttribute("class","cur-lap-text");
+        let cur_lap_text = document.createTextNode("Круг: "+player_list[i].current_lap);
+        cur_lap_span.appendChild(cur_lap_text);
+        div.appendChild(cur_lap_span);
         document.getElementById('players-block').appendChild(div);
     }
     
+}
+
+function updatePlayersBlock(player_number, player_list){
+    for(let i=0; i<player_number;i++){
+        let div = document.getElementById(player_prop_block_ids[i]);
+        //money
+        let money_span = div.querySelector(".money-text");
+        money_span.textContent = player_list[i].money; 
+        //current field
+        let cur_field_span = div.querySelector(".cur-field-text");
+        let field_num = player_list[i].current_field;
+        cur_field_span.textContent = "Поле: " + field_names[field_num-1] + " (" + field_num + ")";
+        //current lap
+        let cur_lap_span = div.querySelector(".cur-lap-text");
+        cur_lap_span.textContent = "Круг: "+player_list[i].current_lap;
+    }
 }
 
 function setFieldParams(){
@@ -235,7 +263,7 @@ class Game {
         let current_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
         
         this.current_player.current_field += random_sum ;
-        this.current_player.current_field %= 40;
+        this.current_player.current_field %= 41;
         if (this.current_player.current_field == 0) this.current_player.current_field = 1;
         let cur_field = this.current_player.current_field;
 
@@ -246,7 +274,6 @@ class Game {
 
         this.current_player = this.players_queue.pop();
         this.players_queue.unshift(this.current_player);
-        console.log(this.players_queue);
     }
     addRollDiceMessage(color_class,num1,num2){
         var par = document.createElement("p");
@@ -263,6 +290,7 @@ class Game {
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
         doScrollDown('chat-block');
+        updatePlayersBlock(this.player_number,this.player_list);
     }
 
   }
