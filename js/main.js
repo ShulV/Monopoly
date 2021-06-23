@@ -14,6 +14,32 @@ const percent_shift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
 const percent_single_field = 2.27272727;
 const percent_single_and_half_field = 3.40919091;
 
+var game;
+
+function addPlayersBlock(player_number, player_list){
+    for(let i=0; i<player_number;i++){
+        let div = document.createElement("div");
+        div.setAttribute("class","player-block");
+        
+        //name
+        let name_span = document.createElement("span");
+        name_span.setAttribute("class","name-text");
+        let name_text = document.createTextNode(player_list[i].name);
+        name_span.appendChild(name_text);
+        div.appendChild(name_span);
+        //money
+        let money_span = document.createElement("span");
+        money_span.setAttribute("class","money-text");
+        let money_text = document.createTextNode(player_list[i].money);
+        money_span.appendChild(money_text);
+        div.appendChild(money_span);
+        //
+        
+        document.getElementById('players-block').appendChild(div);
+    }
+    
+}
+
 function setFieldParams(){
     // 1,11,21,31 - угловые поля
     let root = document.querySelector(':root');
@@ -254,8 +280,10 @@ function startGame(){
     let player_num = 3;
     let player_data = [["Victor",15000,0],["Ilon",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(player_num, player_data);
+    addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);
     setFieldParams();
+
 }
 
 
