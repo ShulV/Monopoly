@@ -11,7 +11,7 @@ const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adi
 const percent_shift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
     25,28.7,30.9,33,35.3,37.6,39.8,42,44.2,46.4,
     50,53.7,55.9,58.1,60.3,62.6,64.8,67,69.2,71.4,
-    75,78.6,80.2,83,85.3,87.5,89.8,91.8,94.2,96.4];
+    75,78.6,80.79,83,85.3,87.5,89.8,91.8,94.2,96.4];
 const percent_single_field = 2.27272727;
 const percent_single_and_half_field = 3.40919091;
 
@@ -172,7 +172,7 @@ function randomInteger(min, max) {
 }
 
 function doScrollDown(scroll_block_name) {
-    document.getElementById(scroll_block_name).scrollTop = 9999;
+    document.getElementById(scroll_block_name).scrollTop = 999999;
 }
 
 // функция выдает путь по квадрату относительно размера экрана пользователя
@@ -243,7 +243,7 @@ class Game {
         for(let i=0;i<player_number;i++){
             this.players_queue.unshift(player_list[i]);
         }
-        console.log(this.players_queue);
+        
          
       }
       
@@ -255,20 +255,23 @@ class Game {
         let random_sum = random_num1 + random_num2;
 
         let player_number = this.current_player.number;
-        this.current_player.fields_passed_number += random_sum;
-        this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
 
+        //ТОЧНО
+        this.current_player.fields_passed_number += random_sum;
+        //ТОЧНО: passed (поле старт) - 0 40 80 120...
+        this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
+        
         //изменение параметров фишки (анимация)
         let player = document.querySelector('.'+players_ids[player_number]);
-        let current_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
-        
-        this.current_player.current_field += random_sum ;
-        this.current_player.current_field %= 41;
-        if (this.current_player.current_field == 0) this.current_player.current_field = 1;
+        let cur_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
+
+        this.current_player.current_field = this.current_player.fields_passed_number % 40 + 1
         let cur_field = this.current_player.current_field;
 
-        current_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
-        player.style.setProperty('--distance'+(player_number+1), current_len);
+        cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
+        player.style.setProperty('--distance'+(player_number+1), cur_len);
+        console.table(this.players_queue);
+        
         
         this.addRollDiceMessage(class_color_name[this.current_player.number],random_num1,random_num2);
 
@@ -306,7 +309,7 @@ function createGame(player_num,player_data){
 
 function startGame(){
     let player_num = 3;
-    let player_data = [["Victor",15000,0],["Ilon",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
+    let player_data = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(player_num, player_data);
     addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);

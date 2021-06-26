@@ -274,7 +274,7 @@ body {
     height: 72px;
     position: absolute;
     bottom: 30px;
-    right: -250px;
+    left: -250px;
     
 }
 
@@ -286,7 +286,7 @@ body {
     top: 0%;
     left: 0%;
     
-    transition: 2s ease;
+    transition: 0.3s ease-in-out;
 
     offset-path: path(var(--path1));
 }
