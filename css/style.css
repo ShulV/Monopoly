@@ -9,7 +9,7 @@ html {
     --distance4: 0;
     --distance5: 0;
     --path1: '';
-    --cell-size: 7.692%; /* (100/11)% */
+    --cell-size: 7.692%; /* (100/11)% размер маленького поля относительно длины стороны поля*/
    
   }
 
@@ -292,30 +292,33 @@ body {
 }
 .red_player{
     offset-distance: calc(var(--distance1, 50) * 1%);
+    margin-top: 0px;
+    margin-left: -5px;
 }
 .green_player{
     offset-distance: calc(var(--distance2, 50) * 1%);
-    margin-top: 5px;
-    margin-left: 5px;
+    margin-top: -5px;
+    margin-left: 0px; 
 } 
 
 .blue_player{
     offset-distance: calc(var(--distance3, 50) * 1%);
-    margin-top: 5px;
-    margin-right: 5px;
-}
-
-.yellow_player{
-    offset-distance: calc(var(--distance4, 50) * 1%);
-    margin-bottom: 5px;
+    margin-top: 0px;
     margin-left: 5px;
 }
 
 .purple_player{
-    offset-distance: calc(var(--distance5, 50) * 1%);
-    margin-bottom: 5px;
-    margin-right: 5px;
+    offset-distance: calc(var(--distance4, 50) * 1%);
+    margin-top: 5px;
+    margin-left: 0px;
 } 
+
+.yellow_player{
+    offset-distance: calc(var(--distance5, 50) * 1%);
+
+}
+
+
 
 .red-text {
     color:rgb(190, 20, 20)
@@ -329,11 +332,11 @@ body {
     color:#2475b3;
 }
 
-.purple_text {
+.purple-text {
     color: #6c1c9e;
 }
 
-.yellow_text {
+.yellow-text {
     color: #9fa127;
 }
 
