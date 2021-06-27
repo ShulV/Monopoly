@@ -34,20 +34,23 @@ function addPlayersBlock(player_number, player_list){
         let money_text = document.createTextNode(player_list[i].money);
         money_span.appendChild(money_text);
         div.appendChild(money_span);
-        //
+        //timer
+        let timer_span = document.createElement("span");
+        timer_span.setAttribute("id","timer-text"+i);
+        timer_span.setAttribute("class","timer-text");
+        let timer_text = document.createTextNode(game.remainingTime);
+        timer_span.appendChild(timer_text);
+        timer_span.style.display = "none";
+        div.appendChild(timer_span);
+
+        if (i==0){
+            timer_span.style.display = "flex";
+        }
         document.getElementById('players-block').appendChild(div);
     }
     
 }
 
-function updatePlayersBlock(player_number, player_list){
-    for(let i=0; i<player_number;i++){
-        let div = document.getElementById(player_prop_block_ids[i]);
-        //money
-        let money_span = div.querySelector(".money-text");
-        money_span.textContent = player_list[i].money; 
-    }
-}
 
 function setFieldParams(){
     // 1,11,21,31 - угловые поля
@@ -221,10 +224,11 @@ class Game {
         this.player_list = player_list;
         this.current_player = this.player_list[player_number-1]; 
         this.players_queue = []; //очередь игроков  
-        this.remainingTime = 0; //оставшееся время таймера
+        this.maxMovingTime=60; //максимальное время хода
+        this.remainingTime = this.maxMovingTime; //оставшееся время таймера
         this.timerId; //таймер
         this.startTime=0; //время старта таймера
-        this.maxMovingTime=7; //максимальное время хода
+        
 
         
 
@@ -244,9 +248,7 @@ class Game {
 
         let player_number = this.current_player.number;
 
-        //ТОЧНО
         this.current_player.fields_passed_number += random_sum;
-        //ТОЧНО: passed (поле старт) - 0 40 80 120...
         this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
         
         //изменение параметров фишки (анимация)
@@ -258,13 +260,18 @@ class Game {
 
         cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
         player.style.setProperty('--distance'+(player_number+1), cur_len);
-        // console.table(this.players_queue);
+        //console.table(this.players_queue);
         
         
         this.addRollDiceMessage(class_color_name[this.current_player.number],random_num1,random_num2);
 
+        this.updatePlayersBlock();
+
         this.current_player = this.players_queue.pop();
         this.players_queue.unshift(this.current_player);
+        
+        clearInterval(this.timerId);
+        this.startTimer();
     }
     addRollDiceMessage(color_class,num1,num2){
         var par = document.createElement("p");
@@ -281,7 +288,7 @@ class Game {
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
         doScrollDown('chat-block');
-        updatePlayersBlock(this.player_number,this.player_list);
+        
     }
     startTimer(){
         this.startTime = new Date().getTime();//время старта в милисекундах
@@ -289,10 +296,10 @@ class Game {
             ()=>{
         let curTime = new Date().getTime();
         let remainingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
-        // let timerText = document.getElementById();
-        // timerText.textContent = remainingTime + " с";
-        // console.log("this.maxMovingTime="+this.maxMovingTime);
-        // console.log("remainingTime="+remainingTime);
+        
+        let timer_span = document.getElementById("timer-text"+this.current_player.number);
+        timer_span.textContent = remainingTime;
+
         if(remainingTime==0){
             alert("Время хода вышло!");
             clearInterval(this.timerId);
@@ -300,6 +307,23 @@ class Game {
             }, 1000);
         
     }
+    updatePlayersBlock(){
+    for(let i=0; i<this.player_number;i++){
+        let div = document.getElementById(player_prop_block_ids[i]);
+        //money
+        let money_span = div.querySelector(".money-text");
+        money_span.textContent = this.player_list[i].money; 
+        //timer
+        let player_number = this.players_queue[0].number;
+        let timer_span = document.getElementById("timer-text"+player_number);
+        timer_span.textContent = "7";
+        timer_span.style.display = "none";
+        let last_player_number = this.players_queue.length-1;
+        let next_player_number = this.players_queue[last_player_number].number;
+        let next_timer_span = document.getElementById("timer-text"+next_player_number);
+        next_timer_span.style.display = "flex";
+    }
+}
   }
 
 function createGame(player_num,player_data){
@@ -313,7 +337,7 @@ function createGame(player_num,player_data){
 
 function startGame(){
     let player_num = 5;
-    let player_data = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
+    let player_data = [["Victor",15000,4],["ILON MASK",15000,3],["Гена",15000,2],["Галкин",15000,1],["Семён",15000,0]];
     createGame(player_num, player_data);
     addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);
