@@ -316,7 +316,7 @@ class Game {
         //timer
         let player_number = this.players_queue[0].number;
         let timer_span = document.getElementById("timer-text"+player_number);
-        timer_span.textContent = "7";
+        timer_span.textContent = this.maxMovingTime;
         timer_span.style.display = "none";
         let last_player_number = this.players_queue.length-1;
         let next_player_number = this.players_queue[last_player_number].number;
