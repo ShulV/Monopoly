@@ -34,19 +34,7 @@ function addPlayersBlock(player_number, player_list){
         let money_text = document.createTextNode(player_list[i].money);
         money_span.appendChild(money_text);
         div.appendChild(money_span);
-        //current field
-        let cur_field_span = document.createElement("span");
-        cur_field_span.setAttribute("class","cur-field-text");
-        let field_num = player_list[i].current_field;
-        let cur_field_text = document.createTextNode("Поле: " + field_names[field_num-1] + " (" + field_num + ")");
-        cur_field_span.appendChild(cur_field_text);
-        div.appendChild(cur_field_span);
-        //current lap
-        let cur_lap_span = document.createElement("span");
-        cur_lap_span.setAttribute("class","cur-lap-text");
-        let cur_lap_text = document.createTextNode("Круг: "+player_list[i].current_lap);
-        cur_lap_span.appendChild(cur_lap_text);
-        div.appendChild(cur_lap_span);
+        //
         document.getElementById('players-block').appendChild(div);
     }
     
@@ -58,13 +46,6 @@ function updatePlayersBlock(player_number, player_list){
         //money
         let money_span = div.querySelector(".money-text");
         money_span.textContent = player_list[i].money; 
-        //current field
-        let cur_field_span = div.querySelector(".cur-field-text");
-        let field_num = player_list[i].current_field;
-        cur_field_span.textContent = "Поле: " + field_names[field_num-1] + " (" + field_num + ")";
-        //current lap
-        let cur_lap_span = div.querySelector(".cur-lap-text");
-        cur_lap_span.textContent = "Круг: "+player_list[i].current_lap;
     }
 }
 
@@ -240,6 +221,13 @@ class Game {
         this.player_list = player_list;
         this.current_player = this.player_list[player_number-1]; 
         this.players_queue = []; //очередь игроков  
+        this.remainingTime = 0; //оставшееся время таймера
+        this.timerId; //таймер
+        this.startTime=0; //время старта таймера
+        this.maxMovingTime=7; //максимальное время хода
+
+        
+
         for(let i=0;i<player_number;i++){
             this.players_queue.unshift(player_list[i]);
         }
@@ -270,7 +258,7 @@ class Game {
 
         cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
         player.style.setProperty('--distance'+(player_number+1), cur_len);
-        console.table(this.players_queue);
+        // console.table(this.players_queue);
         
         
         this.addRollDiceMessage(class_color_name[this.current_player.number],random_num1,random_num2);
@@ -295,7 +283,23 @@ class Game {
         doScrollDown('chat-block');
         updatePlayersBlock(this.player_number,this.player_list);
     }
-
+    startTimer(){
+        this.startTime = new Date().getTime();//время старта в милисекундах
+        this.timerId  = setInterval(
+            ()=>{
+        let curTime = new Date().getTime();
+        let remainingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
+        // let timerText = document.getElementById();
+        // timerText.textContent = remainingTime + " с";
+        // console.log("this.maxMovingTime="+this.maxMovingTime);
+        // console.log("remainingTime="+remainingTime);
+        if(remainingTime==0){
+            alert("Время хода вышло!");
+            clearInterval(this.timerId);
+        }
+            }, 1000);
+        
+    }
   }
 
 function createGame(player_num,player_data){
@@ -314,7 +318,8 @@ function startGame(){
     addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);
     setFieldParams();
-
+    game.startTimer();
 }
+
 
 
