@@ -1,0 +1,25 @@
+* {
+    box-sizing: border-box;
+  }
+ body {
+   height: 100%;
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+ }
+ 
+  .timer-block {
+   font-size: 50px;
+    
+
+   height: 50%;
+   width: 50%;
+   background-color:bisque;
+
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;
+ }
