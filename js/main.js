@@ -337,7 +337,7 @@ function createGame(player_num,player_data){
 
 function startGame(){
     let player_num = 5;
-    let player_data = [["Victor",15000,4],["ILON MASK",15000,3],["Гена",15000,2],["Галкин",15000,1],["Семён",15000,0]];
+    let player_data = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(player_num, player_data);
     addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);
