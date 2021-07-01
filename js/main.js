@@ -145,7 +145,7 @@ function createPlayer(id,player_number){
     // circle.style.boxShadow = "20px 20px 50px 0px rgba(0, 0, 0, 1);"
     circle.setAttribute("id",id);
     circle.setAttribute("class",id);
-    circle.style.zIndex = 999999;
+    //circle.style.zIndex = 999999;
     document.getElementById('play-field').appendChild(circle);
 }
 
@@ -369,6 +369,5 @@ function startGame(){
     setFieldParams();
     game.startTimer(0);
 }
-
 
 
