@@ -44,9 +44,9 @@ body {
 const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",] */
 
 
-
 .player-block {
-    height:25vmin;
+    height:18vmin;
+    
     width:90%;
     margin-top:10px;
     background-color:#192124;
@@ -89,19 +89,19 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
 }
 .active:nth-child(2) {
     background-color:#07b354;
-    outline: 2px solid #177842;
+    outline: 5px solid #177842;
 }
 .active:nth-child(3) {
     background-color:#1e92eb;
-    outline: 2px solid #2475b3;
+    outline: 5px solid #2475b3;
 }
 .active:nth-child(4) {
     background-color:#a20dff;
-    outline: 2px solid #6c1c9e;
+    outline: 5px solid #6c1c9e;
 }
 .active:nth-child(5) {
     background-color:#dbde23;
-    outline: 2px solid #9fa127;
+    outline: 5px solid #9fa127;
 }
 
 .timer-text {
