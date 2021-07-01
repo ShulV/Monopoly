@@ -40,6 +40,11 @@ body {
     align-items:center;
 }
 
+/* const player_bg_colors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
+const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",] */
+
+
+
 .player-block {
     height:25vmin;
     width:90%;
@@ -75,6 +80,28 @@ body {
 .player-block .money-text::after {
     content: "k";
     color:#838383;
+}
+/* const player_bg_colors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
+const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",] */
+.active:nth-child(1) {
+    background-color:#d32020;
+    outline: 5px solid #862a2a;
+}
+.active:nth-child(2) {
+    background-color:#07b354;
+    outline: 2px solid #177842;
+}
+.active:nth-child(3) {
+    background-color:#1e92eb;
+    outline: 2px solid #2475b3;
+}
+.active:nth-child(4) {
+    background-color:#a20dff;
+    outline: 2px solid #6c1c9e;
+}
+.active:nth-child(5) {
+    background-color:#dbde23;
+    outline: 2px solid #9fa127;
 }
 
 .timer-text {
@@ -287,8 +314,8 @@ body {
     width:144px;
     height: 72px;
     position: absolute;
-    bottom: 30px;
-    left: -250px;
+    bottom: 200px;
+    left: 250px;
     
 }
 

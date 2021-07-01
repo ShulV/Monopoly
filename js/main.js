@@ -45,12 +45,12 @@ function addPlayersBlock(player_number, player_list){
 
         if (i==0){
             timer_span.style.display = "flex";
+            div.classList.add("active");
         }
         document.getElementById('players-block').appendChild(div);
     }
     
 }
-
 
 function setFieldParams(){
     // 1,11,21,31 - угловые поля
@@ -221,8 +221,9 @@ class Player{
 class Game {
     constructor(player_number,player_list) {
         this.player_number = player_number;
+        this.curNonLosersNumber = player_number;
         this.player_list = player_list;
-        this.current_player = this.player_list[player_number-1]; 
+        this.current_player = this.player_list[0]; 
         this.players_queue = []; //очередь игроков  
         this.maxMovingTime=60; //максимальное время хода
         this.remainingTime = this.maxMovingTime; //оставшееся время таймера
@@ -230,49 +231,35 @@ class Game {
         this.startTime=0; //время старта таймера
         
 
-        
-
         for(let i=0;i<player_number;i++){
-            this.players_queue.unshift(player_list[i]);
-        }
-        
-         
+            this.players_queue.push(player_list[i]);
+        }  
       }
       
-
-    rollTheDice(){ //TODO исправить, чтобы накопление погрешности не портило позиционирование
+    rollTheDice(){
         //получение двух случайных чисел
         let random_num1 = randomInteger(1, 6);
         let random_num2 = randomInteger(1, 6);
         let random_sum = random_num1 + random_num2;
-
-        let player_number = this.current_player.number;
-
-        this.current_player.fields_passed_number += random_sum;
-        this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
+        this.movePlayer(random_sum);
         
-        //изменение параметров фишки (анимация)
-        let player = document.querySelector('.'+players_ids[player_number]);
-        let cur_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
-
-        this.current_player.current_field = this.current_player.fields_passed_number % 40 + 1
-        let cur_field = this.current_player.current_field;
-
-        cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
-        player.style.setProperty('--distance'+(player_number+1), cur_len);
         //console.table(this.players_queue);
-        
         
         this.addRollDiceMessage(class_color_name[this.current_player.number],random_num1,random_num2);
 
-        this.updatePlayersBlock();
+        this.players_queue.shift();
+        this.players_queue.push(this.current_player);
 
-        this.current_player = this.players_queue.pop();
-        this.players_queue.unshift(this.current_player);
+        this.current_player = this.players_queue[0];
+
+        this.updatePlayersBlock();
         
         clearInterval(this.timerId);
-        this.startTimer();
+
+        let cur_player_number = this.players_queue[0].number;
+        this.startTimer(cur_player_number);
     }
+
     addRollDiceMessage(color_class,num1,num2){
         var par = document.createElement("p");
         var name_text = document.createElement("span");
@@ -290,14 +277,16 @@ class Game {
         doScrollDown('chat-block');
         
     }
-    startTimer(){
+
+    startTimer(cur_player_number){
         this.startTime = new Date().getTime();//время старта в милисекундах
         this.timerId  = setInterval(
             ()=>{
         let curTime = new Date().getTime();
         let remainingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
         
-        let timer_span = document.getElementById("timer-text"+this.current_player.number);
+
+        let timer_span = document.getElementById("timer-text"+cur_player_number);
         timer_span.textContent = remainingTime;
 
         if(remainingTime==0){
@@ -307,25 +296,61 @@ class Game {
             }, 1000);
         
     }
+
+    movePlayer(random_sum){
+        let player_number = this.current_player.number;
+
+        this.current_player.fields_passed_number += random_sum;
+        this.current_player.current_lap = Math.floor(this.current_player.fields_passed_number/40);
+        
+        //изменение параметров фишки (анимация)
+        let player = document.querySelector('.'+players_ids[player_number]);
+        let cur_len = getComputedStyle(player).getPropertyValue('--distance'+(player_number+1));
+
+        this.current_player.current_field = this.current_player.fields_passed_number % 40 + 1
+        let cur_field = this.current_player.current_field;
+
+        cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
+        player.style.setProperty('--distance'+(player_number+1), cur_len);
+    }
+
     updatePlayersBlock(){
-    for(let i=0; i<this.player_number;i++){
-        let div = document.getElementById(player_prop_block_ids[i]);
-        //money
-        let money_span = div.querySelector(".money-text");
-        money_span.textContent = this.player_list[i].money; 
-        //timer
-        let player_number = this.players_queue[0].number;
-        let timer_span = document.getElementById("timer-text"+player_number);
+        this.updateMoneyText();
+        this.updateTimerText();
+        this.updateBackground();        
+    }
+
+    updateBackground(){
+        let prev_player_number = this.players_queue[this.player_number-1].number;
+        let cur_player_number = this.players_queue[0].number;
+        let prev_div = document.getElementById(player_prop_block_ids[prev_player_number]);
+        prev_div.classList.remove("active");
+        let cur_div = document.getElementById(player_prop_block_ids[cur_player_number]);
+        cur_div.classList.add("active");
+
+    }
+
+    updateMoneyText(){
+        for(let i=0; i<this.player_number;i++){
+            let div = document.getElementById(player_prop_block_ids[i]);
+            let money_span = div.querySelector(".money-text");
+            money_span.textContent = this.player_list[i].money; 
+        }
+    }
+
+    updateTimerText(){
+        let prev_player_number = this.players_queue[this.player_number-1].number;
+        let cur_player_number = this.players_queue[0].number;
+        let timer_span = document.getElementById("timer-text"+prev_player_number);
         timer_span.textContent = this.maxMovingTime;
         timer_span.style.display = "none";
-        let last_player_number = this.players_queue.length-1;
-        let next_player_number = this.players_queue[last_player_number].number;
-        let next_timer_span = document.getElementById("timer-text"+next_player_number);
-        next_timer_span.style.display = "flex";
+        let cur_timer_span = document.getElementById("timer-text"+cur_player_number);
+        cur_timer_span.style.display = "flex";
     }
-}
-  }
 
+}
+
+  
 function createGame(player_num,player_data){
     let players = [];
     for(let i=0;i<player_num;i++){
@@ -342,7 +367,7 @@ function startGame(){
     addPlayersBlock(player_num,game.player_list);
     setScalablePath(player_num);
     setFieldParams();
-    game.startTimer();
+    game.startTimer(0);
 }
 
 
