@@ -15,7 +15,7 @@ const percent_shift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
 const percent_single_field = 2.27272727;
 const percent_single_and_half_field = 3.40919091;
 
-var game;
+let game;
 
 function addPlayersBlock(player_number, player_list){
     for(let i=0; i<player_number;i++){
