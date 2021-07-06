@@ -119,10 +119,14 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     justify-content: center;
     align-items:center;
     flex-direction: column;
-    
+
     position: absolute;
     top:30px;
     left:30px;
+}
+
+.player-is-loser {
+    opacity: 0.5;
 }
 
 .game-block {

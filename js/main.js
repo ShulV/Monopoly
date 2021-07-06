@@ -354,6 +354,7 @@ class Player{
       this.currentField = 1;
       this.currentLap = 0;
       this.fieldsPassedNumber = 0;
+      this.isLoser;
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.id);
       createPlayer(id,number);
@@ -376,7 +377,7 @@ class Game {
         this.playerList = playerList;
         this.currentPlayer = this.playerList[0]; 
         this.playersQueue = []; //очередь игроков  
-        this.maxMovingTime=60; //максимальное время хода
+        this.maxMovingTime=5; //максимальное время хода
         this.remainingTime = this.maxMovingTime; //оставшееся время таймера
         this.timerId; //таймер
         this.startTime=0; //время старта таймера
@@ -394,7 +395,7 @@ class Game {
         let randomSum = randomNum1 + randomNum2;
         this.movePlayer(randomSum);
         
-        //console.table(this.playersQueue);
+        console.table(this.playersQueue);
         
         this.addRollDiceMessage(classColorName[this.currentPlayer.number],randomNum1,randomNum2);
 
@@ -409,6 +410,38 @@ class Game {
 
         let curPlayerNumber = this.playersQueue[0].number;
         this.startTimer(curPlayerNumber);
+    }
+
+    playerLose(){
+        
+        clearInterval(this.timerId);
+        
+        this.playersQueue.shift();
+        this.playersQueue.push(this.currentPlayer);
+        this.currentPlayer = this.playersQueue[0];
+        this.updatePlayersBlock();
+        
+        
+        let playerLoser = this.playersQueue.pop();
+        playerLoser.isLoser = true;
+
+
+        let circle = document.getElementById(this.currentPlayer.id);
+        document.getElementById('play-field').removeChild(circle);
+        let playerLoserBlock = document.getElementById(playerPropBlockIds[playerLoser.number]);
+        playerLoserBlock.classList.add("player-is-loser");
+
+        this.curNonLosersNumber--;
+        if (this.curNonLosersNumber == 1) {
+            this.playerWin();
+            return;
+        }
+        this.startTimer(this.currentPlayer.number);
+    }
+
+    playerWin(){
+        let winnerName = this.playersQueue[0].name;
+        alert(winnerName + " Победил!");
     }
 
     addRollDiceMessage(colorClass,num1,num2){
@@ -441,8 +474,8 @@ class Game {
         timerSpan.textContent = remainingTime;
 
         if(remainingTime==0){
-            clearInterval(this.timerId);
-            alert("Время хода вышло!");
+            this.playerLose();
+            
         }
             }, 1000);
         
@@ -460,10 +493,13 @@ class Game {
 
         this.currentPlayer.currentField = this.currentPlayer.fieldsPassedNumber % 40 + 1
         let curField = this.currentPlayer.currentField;
-        console.log("curField = " + curField + "; мона = " + monopolyNames[getMonopolyNumber(curField)]+"; last = "+isLastField(curField));
+        // console.log("curField = " + curField + "; мона = " + monopolyNames[getMonopolyNumber(curField)]+"; last = "+isLastField(curField));
 
         curLen = this.currentPlayer.currentLap*100+percentShift[curField-1];
         player.style.setProperty('--distance'+(playerNumber+1), curLen);
+
+
+        // console.log(this.playersQueue);
     }
 
     updatePlayersBlock(){
@@ -473,8 +509,10 @@ class Game {
     }
 
     updateBackground(){
-        let prevPlayerNumber = this.playersQueue[this.playerNumber-1].number;
+        let prevPlayerNumber = this.playersQueue[this.curNonLosersNumber-1].number;
+        console.log("prev=" + prevPlayerNumber);
         let curPlayerNumber = this.playersQueue[0].number;
+        console.log("cur=" + curPlayerNumber);
         let prevDiv = document.getElementById(playerPropBlockIds[prevPlayerNumber]);
         prevDiv.classList.remove("active");
         let curDiv = document.getElementById(playerPropBlockIds[curPlayerNumber]);
@@ -491,7 +529,7 @@ class Game {
     }
 
     updateTimerText(){
-        let prevPlayerNumber = this.playersQueue[this.playerNumber-1].number;
+        let prevPlayerNumber = this.playersQueue[this.curNonLosersNumber-1].number;
         let curPlayerNumber = this.playersQueue[0].number;
         let timerSpan = document.getElementById("timer-text"+prevPlayerNumber);
         timerSpan.textContent = this.maxMovingTime;
@@ -517,7 +555,7 @@ function startGame(){
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(playerNum, playerData);
     createFields();
-    console.table(fields);
+    // console.table(fields);
     addPlayersBlock(playerNum,game.playerList);
     setScalablePath(playerNum);
     setFieldParams();
