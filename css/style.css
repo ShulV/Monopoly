@@ -55,6 +55,8 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     justify-content: center;
     align-items:center;
     flex-direction: column;
+
+    position: relative;
 }
 
 .player-block span {
@@ -107,15 +109,20 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
 .timer-text {
     font-size: 15px !important;
 
-    height: 25px;
-    width: 25px;
+    height: 35px;
+    width: 35px;
 
     border-radius: 50%;
-    background-color: rgba(0,0,0,0.9);
+    background-color: rgba(0,0,0,0.3);
 
     display: flex;
+    justify-content: center;
     align-items:center;
-    justify-content:center;
+    flex-direction: column;
+    
+    position: absolute;
+    top:30px;
+    left:30px;
 }
 
 .game-block {
