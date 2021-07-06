@@ -11,12 +11,12 @@ const fieldNames = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adid
 const rentMessages = ["Стройте филиалы, чтобы увеличить ренту.", 
 "Рента зависит и от количества Разработчиков игр, которыми вы владеете.",
 "Рента зависит от количества Автомобилей, которыми вы владеете."];
+const monopolyNames = ["Автомобили","Парфюмерия","Одежда","Веб-сервисы","Напитки","Авиалинии","Рестораны","Отели","Электроника","Разработчики игр"];
+
 const fieldCost = [null,600,null,600, null, 2000,1000,null,1000,1200,
 null,1400,1500,1400,1600,2000,1800,null,1800,2000,
 null,2200,null,2200,2400,2000,2600,2600,1500,2800,
 null,3000,3000,null,3200,2000,null,3500,null,4000];
-const fieldDeposit = []; // = fieldCost / 2
-const fieldBuyback = []; // = fieldDeposit + 20%;
 
 const percentShift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
     25,28.7,30.9,33,35.3,37.6,39.8,42,44.2,46.4,
@@ -145,10 +145,24 @@ function setFieldParams(){
 
 function createFields(){
     for(let i=0;i<40;i++){
-        if(fieldCost[i]){
-            // fields[i] = new Field([i])
-        // name,rentMsg,cost,deposit,buyback,fieldNumber,monopolyNumber
+        let fieldNum = i+1;
+        let monopolyNum = getMonopolyNumber(fieldNum);
+        let name = fieldNames[i];
+        let cost = fieldCost[i];
+        if (cost){
+            if(monopolyNumber==0){
+                //авто
+                fields[i] = new CarField(name,cost,fieldNum,monopolyNumber)
+            }
+            else if (monopolyNumber==9){
+                //гейм дев
+            }
+            else {
+                //прокач. моны
+            }
         }
+        else fields[i] = null; //спец поле
+
         
     }
 }
@@ -255,16 +269,49 @@ function setScalablePath(playerNum){
 };
 
 class Field {
-    constructor(name,rentMsg,cost,deposit,buyback,fieldNumber,monopolyNumber){
+    constructor(name,cost,fieldNumber,monopolyNumber){
         this.fieldName = name;
-        this.rentMessage = rentMsg;
+        
+        
         this.cost = cost;
-        this.deposit = deposit;
-        this.buyback = buyback;
+        this.deposit = this.cost / 2;
+        this.buyback = this.deposit * 1.2;
         this.fieldNumber = fieldNumber;
         this.monopolyNumber = monopolyNumber;
+        this.rentLevel = 0;
+
+        if(monopolyNumber == 0) this.rentMessage = rentMessages[2];
+        else if(monopolyNumber == 9) this.rentMessage = rentMessages[1];
+        else this.rentMessage = rentMessages[0];
+
         this.owner = null;
         this.isMonopoly = false;
+    }
+
+    getRent();
+}
+
+class ImprovableField extends Field{
+    constructor(name,cost,fieldNumber,monopolyNumber,rents){
+        super(name,cost,fieldNumber,monopolyNumber);
+        this.levelRentList = rents;
+        //rentLevel [0..5] max=5
+    }
+}
+
+class GameDevsField extends Field{
+    constructor(name,cost,fieldNumber,monopolyNumber){
+        super(name,cost,fieldNumber,monopolyNumber);
+        this.multiplierRentList = [100,250];
+        //rentLevel [0..1] max=1
+    }
+}
+
+class CarField extends Field{
+    constructor(name,cost,fieldNumber,monopolyNumber){
+        super(name,cost,fieldNumber,monopolyNumber);
+        this.levelRentList = [250,500,1000,2000];
+        //rentLevel [0..3] max=3
     }
 }
 
