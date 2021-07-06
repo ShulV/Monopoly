@@ -212,8 +212,8 @@ function doScrollDown(scrollBlockName) {
     document.getElementById(scrollBlockName).scrollTop = 999999;
 }
 
-function getMonopolyNumber(fieldNumber){
-    let fl = parseInt(fieldNumber);
+function getMonopolyNumber(fieldNum){
+    let fl = parseInt(fieldNum);
     if (fl == 1 || fl == 11 || fl == 21 || fl == 31){
         return null; //угловое поле
     }
@@ -293,19 +293,19 @@ function setScalablePath(playerNum){
 };
 
 class Field {
-    constructor(name,cost,fieldNumber,monopolyNumber){
+    constructor(name,cost,fieldNum,monopolyNum){
         this.fieldName = name;
         
         
         this.cost = cost;
         this.deposit = this.cost / 2;
         this.buyback = this.deposit * 1.2;
-        this.fieldNumber = fieldNumber;
-        this.monopolyNumber = monopolyNumber;
+        this.fieldNum = fieldNum;
+        this.monopolyNum = monopolyNum;
         this.rentLevel = 0;
 
-        if(monopolyNumber == 0) this.rentMessage = rentMessages[2];
-        else if(monopolyNumber == 9) this.rentMessage = rentMessages[1];
+        if(monopolyNum == 0) this.rentMessage = rentMessages[2];
+        else if(monopolyNum == 9) this.rentMessage = rentMessages[1];
         else this.rentMessage = rentMessages[0];
 
         this.owner = null;
@@ -318,25 +318,25 @@ class Field {
 }
 
 class ImprovableField extends Field{
-    constructor(name,cost,fieldNumber,monopolyNumber,rentList){
-        super(name,cost,fieldNumber,monopolyNumber);
+    constructor(name,cost,fieldNum,monopolyNum,rentList){
+        super(name,cost,fieldNum,monopolyNum);
         this.rentList = rentList;
-        this.upgradePrice = fieldUpgradePrices[monopolyNumber];
+        this.upgradePrice = fieldUpgradePrices[monopolyNum];
         //rentLevel [0..5] max=5
     }
 }
 
 class GameDevsField extends Field{
-    constructor(name,cost,fieldNumber,monopolyNumber){
-        super(name,cost,fieldNumber,monopolyNumber);
+    constructor(name,cost,fieldNum,monopolyNum){
+        super(name,cost,fieldNum,monopolyNum);
         this.multiplierRentList = normalMonopolyRentList[9];
         //rentLevel [0..1] max=1
     }
 }
 
 class CarField extends Field{
-    constructor(name,cost,fieldNumber,monopolyNumber){
-        super(name,cost,fieldNumber,monopolyNumber);
+    constructor(name,cost,fieldNum,monopolyNum){
+        super(name,cost,fieldNum,monopolyNum);
         this.rentList = normalMonopolyRentList[0];
         //rentLevel [0..3] max=3
     }
