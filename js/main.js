@@ -164,13 +164,17 @@ function createFields(){
         if (cost){
             if(monopolyNumber==0){
                 //авто
-                fields[i] = new CarField(name,cost,fieldNum,monopolyNumber)
+                fields[i] = new CarField(name,cost,fieldNum,monopolyNumber);
             }
             else if (monopolyNumber==9){
                 //гейм дев
+                fields[i] = new GameDevsField(name,cost,fieldNum,monopolyNumber);
             }
             else {
                 //прокач. моны
+                let rentList;
+                //tyt
+                fields[i] = new ImprovableField(name,cost,fieldNum,monopolyNumber,rentList);
             }
         }
         else fields[i] = null; //спец поле
@@ -248,6 +252,13 @@ function getMonopolyNumber(fieldNumber){
     else return 8; //мона электроники
 }
 
+function isLastField(fieldNum){
+    let fl = fieldNum;
+    if(fl==4 || fl == 10 || fl == 15|| fl == 20 || 
+        fl == 25 || fl == 30 || fl == 35 || fl == 40) return true;
+    return false
+}
+
 // функция выдает путь по квадрату относительно размера экрана пользователя
 function setScalablePath(playerNum){
     let players = [];
@@ -308,7 +319,7 @@ class Field {
 class ImprovableField extends Field{
     constructor(name,cost,fieldNumber,monopolyNumber,rentList){
         super(name,cost,fieldNumber,monopolyNumber);
-        this.levelRentList = rentList;
+        this.rentList = rentList;
         //rentLevel [0..5] max=5
     }
 }
@@ -316,7 +327,7 @@ class ImprovableField extends Field{
 class GameDevsField extends Field{
     constructor(name,cost,fieldNumber,monopolyNumber){
         super(name,cost,fieldNumber,monopolyNumber);
-        this.multiplierRentList = [100,250];
+        this.multiplierRentList = normalMonopolyRentList[9];
         //rentLevel [0..1] max=1
     }
 }
@@ -324,7 +335,7 @@ class GameDevsField extends Field{
 class CarField extends Field{
     constructor(name,cost,fieldNumber,monopolyNumber){
         super(name,cost,fieldNumber,monopolyNumber);
-        this.levelRentList = [250,500,1000,2000];
+        this.rentList = normalMonopolyRentList[0];
         //rentLevel [0..3] max=3
     }
 }
@@ -447,7 +458,7 @@ class Game {
 
         this.currentPlayer.currentField = this.currentPlayer.fieldsPassedNumber % 40 + 1
         let curField = this.currentPlayer.currentField;
-        console.log("curField = " + curField + "; номер моны = " + getMonopolyNumber(curField));
+        console.log("curField = " + curField + "; мона = " + monopolyNames[getMonopolyNumber(curField)]+"; last = "+isLastField(curField));
 
         curLen = this.currentPlayer.currentLap*100+percentShift[curField-1];
         player.style.setProperty('--distance'+(playerNumber+1), curLen);
