@@ -162,24 +162,23 @@ function createFields(){
         let name = fieldNames[i];
         let cost = fieldCost[i];
         if (cost){
-            if(monopolyNumber==0){
+            if(monopolyNum==0){
                 //авто
-                fields[i] = new CarField(name,cost,fieldNum,monopolyNumber);
+                fields[i] = new CarField(name,cost,fieldNum,monopolyNum);
             }
-            else if (monopolyNumber==9){
+            else if (monopolyNum==9){
                 //гейм дев
-                fields[i] = new GameDevsField(name,cost,fieldNum,monopolyNumber);
+                fields[i] = new GameDevsField(name,cost,fieldNum,monopolyNum);
             }
             else {
                 //прокач. моны
                 let rentList;
-                //tyt
-                fields[i] = new ImprovableField(name,cost,fieldNum,monopolyNumber,rentList);
+                if(isLastField(fieldNum)) rentList = lastMonopolyRentList[monopolyNum];
+                else rentList = normalMonopolyRentList[monopolyNum];
+                fields[i] = new ImprovableField(name,cost,fieldNum,monopolyNum,rentList);
             }
         }
-        else fields[i] = null; //спец поле
-
-        
+        else fields[i] = null; //спец поле  
     }
 }
 
@@ -514,9 +513,12 @@ function startGame(){
     let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(playerNum, playerData);
+    createFields();
+    console.table(fields);
     addPlayersBlock(playerNum,game.playerList);
     setScalablePath(playerNum);
     setFieldParams();
+
     game.startTimer(0);
 }
 
