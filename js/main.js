@@ -30,6 +30,8 @@ null,1400,1500,1400,1600,2000,1800,null,1800,2000,
 null,2200,null,2200,2400,2000,2600,2600,1500,2800,
 null,3000,3000,null,3200,2000,null,3500,null,4000];
 
+const fieldUpgradePrices = [null,500,500,750,1000,1250,1500,1750,2000,null];
+
 const percentShift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
     25,28.7,30.9,33,35.3,37.6,39.8,42,44.2,46.4,
     50,53.7,55.9,58.1,60.3,62.6,64.8,67,69.2,71.4,
@@ -319,6 +321,7 @@ class ImprovableField extends Field{
     constructor(name,cost,fieldNumber,monopolyNumber,rentList){
         super(name,cost,fieldNumber,monopolyNumber);
         this.rentList = rentList;
+        this.upgradePrice = fieldUpgradePrices[monopolyNumber];
         //rentLevel [0..5] max=5
     }
 }
