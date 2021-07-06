@@ -1,7 +1,7 @@
 const playerBgColors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
 const playerBorderColors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",];
 const playersColors = ["red","green","blue","purple","yellow"];
-const playersIds = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"];
+const playersIds = ["red-player", "green-player", "blue-player", "purple-player", "yellow-player"];
 const playerPropBlockIds = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",];
 const classColorName = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"];
 const fieldNames = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
@@ -439,7 +439,7 @@ function createGame(playerNum,playerData){
 }
 
 function startGame(){
-    let playerNum = 1;
+    let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(playerNum, playerData);
     addPlayersBlock(playerNum,game.playerList);

@@ -319,7 +319,7 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     
 }
 
-.red_player, .green_player, .blue_player, .yellow_player, .purple_player {
+.red-player, .green-player, .blue-player, .yellow-player, .purple-player {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -331,30 +331,30 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
 
     offset-path: path(var(--path1));
 }
-.red_player{
+.red-player{
     offset-distance: calc(var(--distance1, 50) * 1%);
     margin-top: 0px;
     margin-left: -5px;
 }
-.green_player{
+.green-player{
     offset-distance: calc(var(--distance2, 50) * 1%);
     margin-top: -5px;
     margin-left: 0px; 
 } 
 
-.blue_player{
+.blue-player{
     offset-distance: calc(var(--distance3, 50) * 1%);
     margin-top: 0px;
     margin-left: 5px;
 }
 
-.purple_player{
+.purple-player{
     offset-distance: calc(var(--distance4, 50) * 1%);
     margin-top: 5px;
     margin-left: 0px;
 } 
 
-.yellow_player{
+.yellow-player{
     offset-distance: calc(var(--distance5, 50) * 1%);
 
 }
