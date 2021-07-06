@@ -1,13 +1,20 @@
 const player_bg_colors = ["#d32020","#07b354","#1e92eb","#a20dff","#dbde23",];
-const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",]
+const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",];
 const players_colors = ["red","green","blue","purple","yellow"];
-const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"]
-const player_prop_block_ids = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",]
-const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"]
+const players_ids = ["red_player", "green_player", "blue_player", "purple_player", "yellow_player"];
+const player_prop_block_ids = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",];
+const class_color_name = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"];
 const field_names = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
 "Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
 "Jackpot","American airlines","?","Lufthansa","British airways","Ford","McDonald's","BurgerKing","Rovio","KFC",
-"GoToJail","Holiday Inn","Radisson","?","Novotel","Land rover","Tax luxury","Apple","?","Nokia"]
+"GoToJail","Holiday Inn","Radisson","?","Novotel","Land rover","Tax luxury","Apple","?","Nokia"];
+const rentMessages = ["Стройте филиалы, чтобы увеличить ренту.", 
+"Рента зависит и от количества Разработчиков игр, которыми вы владеете.",
+"Рента зависит от количества Автомобилей, которыми вы владеете."];
+const fieldCost = [];
+const fieldDeposit = [];
+const fieldBuyback = [];
+
 const percent_shift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
     25,28.7,30.9,33,35.3,37.6,39.8,42,44.2,46.4,
     50,53.7,55.9,58.1,60.3,62.6,64.8,67,69.2,71.4,
@@ -159,6 +166,47 @@ function doScrollDown(scroll_block_name) {
     document.getElementById(scroll_block_name).scrollTop = 999999;
 }
 
+function getMonopolyNumber(fieldNumber){
+    let fl = parseInt(fieldNumber);
+    if (fl == 1 || fl == 11 || fl == 21 || fl == 31){
+        return null; //угловое поле
+    }
+    if (fl == 3 || fl == 8 || fl == 18 || fl == 23 || fl == 34 || fl == 39){
+        return null; //поле "?"
+    }
+    if (fl == 5 || fl == 37) {
+        return null; //налоговые поля
+    }
+    if (fl == 6 || fl == 16 || fl == 26 ||  fl == 36){
+        return 0; //мона автомобилей
+    }
+    if (fl == 13 || fl == 29){
+        return 9; //мона разработчиков игр
+    }
+    if (fl < 5) {
+        return 1; //мона парфюмерии
+    }
+    if (fl < 11) {
+        return 2; //мона одежды
+    }
+    if (fl < 16) {
+        return 3; //мона веб-сервисов
+    }
+    if (fl < 21) {
+        return 4; //мона напитков
+    }
+    if (fl < 26) {
+        return 5; //мона авиалиний
+    }
+    if (fl < 31) {
+        return 6; //мона ресторанов
+    }
+    if (fl < 36) {
+        return 7; //мона отелей
+    }
+    else return 8; //мона электроники
+}
+
 // функция выдает путь по квадрату относительно размера экрана пользователя
 function setScalablePath(player_num){
     let players = [];
@@ -190,6 +238,20 @@ function setScalablePath(player_num){
     };
     
 };
+
+class Field {
+    constructor(name,rentMsg,cost,deposit,buyback,fieldNumber,monopolyNumber){
+        this.fieldName = name;
+        this.rentMessage = rentMsg;
+        this.cost = cost;
+        this.deposit = deposit;
+        this.buyback = buyback;
+        this.fieldNumber = fieldNumber;
+        this.monopolyNumber = monopolyNumber;
+        this.owner = null;
+        this.isMonopoly = false;
+    }
+}
 
 class Player{
 
@@ -290,8 +352,8 @@ class Game {
         timer_span.textContent = remainingTime;
 
         if(remainingTime==0){
-            alert("Время хода вышло!");
             clearInterval(this.timerId);
+            alert("Время хода вышло!");
         }
             }, 1000);
         
@@ -309,6 +371,7 @@ class Game {
 
         this.current_player.current_field = this.current_player.fields_passed_number % 40 + 1
         let cur_field = this.current_player.current_field;
+        console.log("cur_field = " + cur_field + "; номер моны = " + getMonopolyNumber(cur_field));
 
         cur_len = this.current_player.current_lap*100+percent_shift[cur_field-1];
         player.style.setProperty('--distance'+(player_number+1), cur_len);
