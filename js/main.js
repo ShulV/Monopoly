@@ -288,7 +288,9 @@ class Field {
         this.isMonopoly = false;
     }
 
-    getRent();
+    getRent(){
+
+    }
 }
 
 class ImprovableField extends Field{
