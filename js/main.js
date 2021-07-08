@@ -155,6 +155,15 @@ function setFieldParams(){
     chatBlock.style.left = String(floatCellSize*2)+"%";
     chatBlock.style.height = String(floatCellSize*9)+"%";
     chatBlock.style.width = String(floatCellSize*9)+"%";
+    // modal-block
+    // 5% отступы относительно чат-блока
+    let modalBlock = document.getElementById('modal-block');
+    let chatBlockWidth = chatBlock.clientWidth;
+    let modalWidth = chatBlockWidth*0.9; //без боковых отступов
+    let modalHeight = Math.floor(modalWidth / 3);
+    modalBlock.style.width = modalWidth+"px";
+    modalBlock.style.height = modalHeight+"px";
+    modalBlock.style.marginTop = String(floatCellSize*2+3)+"%";
 }
 
 function createFields(){
@@ -183,6 +192,43 @@ function createFields(){
         else fields[i] = null; //спец поле  
     }
 }
+
+function createModalWindow(options){
+    const modal = document.createElement('div');
+    modal.classList.add('modal-block');
+    modal.setAttribute('id','modal-block');
+    modal.insertAdjacentHTML('afterbegin',`
+        
+            <div id="modal-header">
+                <span>Ваш ход!</span>
+            </div>
+            <div id="modal-body">
+                <p>
+                    <span>Совет</span>
+                    Чтобы предложить договор игроку, нажмите на его карточку слева.
+                </p>
+            </div>
+            <div id="modal-footer">
+                <div id="modal-btn-roll-dice" onclick="game.rollTheDice()">
+                    <span>Бросить кубики</span>
+                </div>
+            </div>
+    `
+    )
+    
+    
+
+    document.getElementById("play-field").appendChild(modal);
+
+    document.getElementById("modal-block").classList.add("modal-block");
+    document.getElementById("modal-header").classList.add("modal-header");
+    document.getElementById("modal-body").classList.add("modal-body");
+    document.getElementById("modal-footer").classList.add("modal-footer");
+    document.getElementById("modal-btn-roll-dice").classList.add("modal-btn-roll-dice");
+    return modal;
+
+}
+
 
 
 function createPlayer(id,playerNumber){
@@ -392,7 +438,8 @@ class Game {
         
         // console.table(this.playersQueue);
         
-        this.addRollDiceMessage(classColorName[this.currentPlayer.number],randomNum1,randomNum2);
+        this.addRollDiceMessage(randomNum1,randomNum2);
+        this.addGotOnFieldMessage();
 
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
@@ -439,7 +486,8 @@ class Game {
         alert(winnerName + " Победил!");
     }
 
-    addRollDiceMessage(colorClass,num1,num2){
+    addRollDiceMessage(num1,num2){
+        let colorClass = classColorName[this.currentPlayer.number];
         let par = document.createElement("p");
         let nameText = document.createElement("span");
         nameText.setAttribute("class",colorClass);
@@ -448,13 +496,31 @@ class Game {
         par.appendChild(nameText);
         let fieldNum = this.currentPlayer.currentField;
         
-        let msgText = " выбрасывает "+String(num1)+":"+String(num2) + " и попадает на поле '" + fieldNames[fieldNum-1] + "'";
+        let msgText = " выбрасывает "+String(num1)+":"+String(num2);
         text = document.createTextNode(msgText);
   
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
         doScrollDown('chat-block');
         
+    }
+
+    addGotOnFieldMessage(){
+        let colorClass = classColorName[this.currentPlayer.number];
+        let par = document.createElement("p");
+        let nameText = document.createElement("span");
+        nameText.setAttribute("class",colorClass);
+        let text = document.createTextNode(this.currentPlayer.name);
+        nameText.appendChild(text);
+        par.appendChild(nameText);
+        let fieldNum = this.currentPlayer.currentField;
+        
+        let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
+        text = document.createTextNode(msgText);
+  
+        par.appendChild(text);
+        document.getElementById('chat-block').appendChild(par);
+        doScrollDown('chat-block');
     }
 
     startTimer(curPlayerNumber){
@@ -538,7 +604,6 @@ class Game {
 
 }
 
-  
 function createGame(playerNum,playerData){
     let players = [];
     for(let i=0;i<playerNum;i++){
@@ -549,12 +614,14 @@ function createGame(playerNum,playerData){
 }
 
 function startGame(){
-    let playerNum = 2;
+    let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(playerNum, playerData);
     createFields();
     // console.table(fields);
     addPlayersBlock(playerNum,game.playerList);
+
+    createModalWindow({});
     setScalablePath(playerNum);
     setFieldParams();
 
