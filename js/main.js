@@ -186,7 +186,7 @@ function createFields(){
 
 
 function createPlayer(id,playerNumber){
-    var circle = document.createElement("div");
+    let circle = document.createElement("div");
     circle.style.height = "25px";
     circle.style.width = "25px";
     circle.style.position = "absolute";
@@ -360,12 +360,7 @@ class Player{
       createPlayer(id,number);
     }
     
-    changePositionX(playerId, x){
-        document.getElementById(playerId).style.left = x+"px";
-    }
-    changePositionY(playerId, y){
-        document.getElementById(playerId).style.top = y+"px";
-    }
+
     
   
   }
@@ -395,7 +390,7 @@ class Game {
         let randomSum = randomNum1 + randomNum2;
         this.movePlayer(randomSum);
         
-        console.table(this.playersQueue);
+        // console.table(this.playersQueue);
         
         this.addRollDiceMessage(classColorName[this.currentPlayer.number],randomNum1,randomNum2);
 
@@ -413,7 +408,7 @@ class Game {
     }
 
     playerLose(){
-        
+        console.log("PLAYER_LOSE");
         clearInterval(this.timerId);
         
         this.playersQueue.shift();
@@ -426,7 +421,7 @@ class Game {
         playerLoser.isLoser = true;
 
 
-        let circle = document.getElementById(this.currentPlayer.id);
+        let circle = document.getElementById(playerLoser.id);
         document.getElementById('play-field').removeChild(circle);
         let playerLoserBlock = document.getElementById(playerPropBlockIds[playerLoser.number]);
         playerLoserBlock.classList.add("player-is-loser");
@@ -445,10 +440,10 @@ class Game {
     }
 
     addRollDiceMessage(colorClass,num1,num2){
-        var par = document.createElement("p");
-        var nameText = document.createElement("span");
+        let par = document.createElement("p");
+        let nameText = document.createElement("span");
         nameText.setAttribute("class",colorClass);
-        var text = document.createTextNode(this.currentPlayer.name);
+        let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
         let fieldNum = this.currentPlayer.currentField;
@@ -482,6 +477,7 @@ class Game {
     }
 
     movePlayer(randomSum){
+        // console.table(this);
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
@@ -489,6 +485,7 @@ class Game {
         
         //изменение параметров фишки (анимация)
         let player = document.querySelector('.'+playersIds[playerNumber]);
+        console.log("player class: " +playersIds[playerNumber]);
         let curLen = getComputedStyle(player).getPropertyValue('--distance'+(playerNumber+1));
 
         this.currentPlayer.currentField = this.currentPlayer.fieldsPassedNumber % 40 + 1
@@ -510,9 +507,9 @@ class Game {
 
     updateBackground(){
         let prevPlayerNumber = this.playersQueue[this.curNonLosersNumber-1].number;
-        console.log("prev=" + prevPlayerNumber);
+        // console.log("prev=" + prevPlayerNumber);
         let curPlayerNumber = this.playersQueue[0].number;
-        console.log("cur=" + curPlayerNumber);
+        // console.log("cur=" + curPlayerNumber);
         let prevDiv = document.getElementById(playerPropBlockIds[prevPlayerNumber]);
         prevDiv.classList.remove("active");
         let curDiv = document.getElementById(playerPropBlockIds[curPlayerNumber]);
@@ -521,10 +518,11 @@ class Game {
     }
 
     updateMoneyText(){
-        for(let i=0; i<this.playerNumber;i++){
-            let div = document.getElementById(playerPropBlockIds[i]);
+        for(let i=0; i<this.curNonLosersNumber;i++){
+            let playerNum = this.playersQueue[i].number;
+            let div = document.getElementById(playerPropBlockIds[playerNum]);
             let moneySpan = div.querySelector(".money-text");
-            moneySpan.textContent = this.playerList[i].money; 
+            moneySpan.textContent = this.playersQueue[i].money; 
         }
     }
 
@@ -551,7 +549,7 @@ function createGame(playerNum,playerData){
 }
 
 function startGame(){
-    let playerNum = 5;
+    let playerNum = 2;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createGame(playerNum, playerData);
     createFields();
