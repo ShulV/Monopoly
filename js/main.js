@@ -474,10 +474,12 @@ class Player{
       this.number = number;
       this.color = playersColors[number];
       this.id = playersIds[number];
-      this.currentField = 1;
+      this.currentFieldNum = 1;
+      this.currentFieldObj = fields[0];
       this.currentLap = 0;
       this.fieldsPassedNumber = 0;
       this.isLoser;
+      this.purchasedFields = [];
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.id);
       createPlayer(id,number);
@@ -522,7 +524,7 @@ class Game {
         // console.table(this.playersQueue);
         
         this.addRollDiceMessage(randomNum1,randomNum2);
-        let curField = fields[this.currentPlayer.currentField-1]
+        let curField = fields[this.currentPlayer.currentFieldNum-1]
         if(curField && !curField.owner){
             this.addGotOnFieldMessage();
             buyFieldModal.open();
@@ -582,7 +584,7 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentField;
+        let fieldNum = this.currentPlayer.currentFieldNum;
         
         let msgText = " выбрасывает "+String(num1)+":"+String(num2);
         text = document.createTextNode(msgText);
@@ -601,7 +603,7 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentField;
+        let fieldNum = this.currentPlayer.currentFieldNum;
         
         let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
         text = document.createTextNode(msgText);
@@ -619,7 +621,7 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentField;
+        let fieldNum = this.currentPlayer.currentFieldNum;
         
         let msgText = " сдаётся";
         text = document.createTextNode(msgText);
@@ -659,11 +661,10 @@ class Game {
         let player = document.querySelector('.'+playersIds[playerNumber]);
         let curLen = getComputedStyle(player).getPropertyValue('--distance'+(playerNumber+1));
 
-        this.currentPlayer.currentField = this.currentPlayer.fieldsPassedNumber % 40 + 1
-        let curField = this.currentPlayer.currentField;
-        // console.log("curField = " + curField + "; мона = " + monopolyNames[getMonopolyNumber(curField)]+"; last = "+isLastField(curField));
+        this.currentPlayer.currentFieldNum = this.currentPlayer.fieldsPassedNumber % 40 + 1
+        let curFieldNum = this.currentPlayer.currentFieldNum;
 
-        curLen = this.currentPlayer.currentLap*100+percentShift[curField-1];
+        curLen = this.currentPlayer.currentLap*100+percentShift[curFieldNum-1];
         player.style.setProperty('--distance'+(playerNumber+1), curLen);
 
 
