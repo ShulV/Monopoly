@@ -455,9 +455,8 @@ class Game {
     }
 
     playerLose(){
-        console.log("PLAYER_LOSE");
         clearInterval(this.timerId);
-        
+        this.addSurrenderMessage();
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
         this.currentPlayer = this.playersQueue[0];
@@ -516,6 +515,24 @@ class Game {
         let fieldNum = this.currentPlayer.currentField;
         
         let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
+        text = document.createTextNode(msgText);
+  
+        par.appendChild(text);
+        document.getElementById('chat-block').appendChild(par);
+        doScrollDown('chat-block');
+    }
+
+    addSurrenderMessage(){
+        let colorClass = classColorName[this.currentPlayer.number];
+        let par = document.createElement("p");
+        let nameText = document.createElement("span");
+        nameText.setAttribute("class",colorClass);
+        let text = document.createTextNode(this.currentPlayer.name);
+        nameText.appendChild(text);
+        par.appendChild(nameText);
+        let fieldNum = this.currentPlayer.currentField;
+        
+        let msgText = " сдаётся";
         text = document.createTextNode(msgText);
   
         par.appendChild(text);
