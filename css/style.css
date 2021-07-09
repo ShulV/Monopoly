@@ -175,8 +175,8 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     background-color:#fff;
     border-radius: 10px;
 
-    opacity: 1;
-    z-index: 1000;
+    opacity: 0;
+    z-index: -1;
     transition-duration: 0.3s;
     display: flex;
     flex-direction: column;

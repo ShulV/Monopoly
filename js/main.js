@@ -41,6 +41,7 @@ const percentSingleAndHalfField = 3.40919091;
 
 let game;
 let fields = [];
+let modalRollDice;
 
 function addPlayersBlock(playerNumber, playerList){
     for(let i=0; i<playerNumber;i++){
@@ -193,42 +194,95 @@ function createFields(){
     }
 }
 
-function createModalWindow(options){
-    const modal = document.createElement('div');
-    modal.classList.add('modal-block');
-    modal.setAttribute('id','modal-block');
-    modal.insertAdjacentHTML('afterbegin',`
-        
-            <div id="modal-header">
-                <span>Ваш ход!</span>
-            </div>
-            <div id="modal-body">
-                <p>
-                    <span>Совет</span>
-                    Чтобы предложить договор игроку, нажмите на его карточку слева.
-                </p>
-            </div>
-            <div id="modal-footer">
-                <div id="modal-btn-roll-dice" onclick="game.rollTheDice()">
-                    <span>Бросить кубики</span>
+class ModalWindow{
+    /*
+    modalType - строка
+    0 - "rollDice" - бросить кубики (h-"Ваш ход",b-"Какой-то совет",f-1:"бросить кубики")
+    1 - "buyField" - купить поле/аукцион (h-"Покупаем?",b-"Если вы откажетесь от покупки, то поле будет выставлено на общий аукцион",f-1:"купить за 100к",2:"на аукцион")
+    2 - "payPlayerRent" - заплатить аренду (h-"Заплатите аренду.",b-"Попадая на чужие поля, вы должны выплачивать арнеду его владельцу",f-1:"заплатить 100к")
+    3 - "payBankRent" - заплатить банку (h-"Заплатите банку.",b-"Вы можете получить деньги, продав филиалы или заложив фирму - для этого кликните на неё.",f-1:"заплатить 100к")
+    4 - "auction" - аукцион (h-"На аукционе fieldName!",b-"Вы можете либо поднять ставку на 100к, либо покинуть аукцион.",f-1:"Поднять до 3100к", 2:"отказаться")
+    */
+    constructor(modalType){
+        let isOneButton = true;
+        this.btnText2 = null;
+        this.btnId2 = null;
+        switch(modalType) {
+            case 'rollDice':
+                this.headerText = "Ваш ход!";
+                this.bodyText = "Совет.";
+                this.btnText1 = "Бросить кубики";
+                this.btnId1 = "modal-btn-roll-dice";
+                break;
+            case 'buyField':
+                this.headerText = "Заплатите аренду.";
+                this.bodyText = "Попадая на чужие поля, вы должны выплачивать арнеду его владельцу.";
+                let sum = 100; //TODO
+                this.btnText1 = "Купить за " + sum + "k";
+                this.btnText2 = "На аукцион.";
+                this.btnId1 = "modal-btn-buy-field";
+                this.btnId2 = "modal-btn-refuse";
+                isOneButton = false;
+                break;
+            //TODO
+            case 'payPlayerRent':
+                break;
+            case 'payBankRent':
+                break;
+            case 'auction':
+                break;
+            default:
+                break;
+          }
+        this.createModalWindowElem(this.headerText,this.bodyText,isOneButton,this.btnText1,this.btnText2,this.btnId1,this.btnId2);
+    }
+    createModalWindowElem(headerText,bodyText,isOneButton,btnText1,btnText2,btnId1,btnId2){
+        const modal = document.createElement('div');
+        modal.classList.add('modal-block');
+        modal.setAttribute('id','modal-block');
+        modal.insertAdjacentHTML('afterbegin',`
+            
+                <div id="modal-header">
+                    <span>${headerText}</span>
                 </div>
-            </div>
-    `
-    )
+                <div id="modal-body">
+                    <p>${bodyText}</p>
+                </div>
+                <div id="modal-footer">
+                    <div id=${btnId1} onclick="game.rollTheDice()">
+                        <span>${btnText1}</span>
+                    </div>
+                </div>
+            `);
+        if(!isOneButton){
+            let div = document.createElement('div');
+            div.setAttribute('id',btnId2);
+            let span = document.createElement('span');
+            span.textContent = btnText2;
+            div.appendChild(span);
+            modal.getElementById("modal-footer").appendChild(div);
+            modal.getElementById(btnId1).classList.add("modal-small-btn");
+            modal.getElementById(btnId2).classList.add("modal-small-btn");
+            document.getElementById(btnId2).classList.add(btnId2);
+        }
+
+        document.getElementById("play-field").appendChild(modal);
     
-    
-
-    document.getElementById("play-field").appendChild(modal);
-
-    document.getElementById("modal-block").classList.add("modal-block");
-    document.getElementById("modal-header").classList.add("modal-header");
-    document.getElementById("modal-body").classList.add("modal-body");
-    document.getElementById("modal-footer").classList.add("modal-footer");
-    document.getElementById("modal-btn-roll-dice").classList.add("modal-btn-roll-dice");
-    return modal;
-
+        document.getElementById("modal-block").classList.add("modal-block");
+        document.getElementById("modal-header").classList.add("modal-header");
+        document.getElementById("modal-body").classList.add("modal-body");
+        document.getElementById("modal-footer").classList.add("modal-footer");
+        document.getElementById(btnId1).classList.add(btnId1);
+        
+        return modal;
+    }
 }
 
+
+
+function createModals(){
+    rollTheDice = new ModalWindow("rollDice");
+}
 
 
 function createPlayer(id,playerNumber){
@@ -638,10 +692,11 @@ function startGame(){
     // console.table(fields);
     addPlayersBlock(playerNum,game.playerList);
 
-    createModalWindow({});
+    // createModalWindow({});
+    createModals();
     setScalablePath(playerNum);
     setFieldParams();
-
+    
     game.startTimer(0);
 }
 
