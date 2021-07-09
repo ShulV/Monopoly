@@ -160,13 +160,16 @@ function setFieldParams(){
     chatBlock.style.width = String(floatCellSize*9)+"%";
     // modal-block
     // 5% отступы относительно чат-блока
-    let modalBlock = document.getElementById('modal-block');
     let chatBlockWidth = chatBlock.clientWidth;
     let modalWidth = chatBlockWidth*0.9; //без боковых отступов
     let modalHeight = Math.floor(modalWidth / 3);
-    modalBlock.style.width = modalWidth+"px";
-    modalBlock.style.height = modalHeight+"px";
-    modalBlock.style.marginTop = String(floatCellSize*2+3)+"%";
+    let modalBlocks = document.getElementsByClassName('modal-block');
+    for(let i=0; i<modalBlocks.length;i++){
+        modalBlocks[i].style.width = modalWidth+"px";
+        modalBlocks[i].style.height = modalHeight+"px";
+        modalBlocks[i].style.marginTop = String(floatCellSize*2+3)+"%";
+    }
+    
 }
 
 function createFields(){
@@ -211,8 +214,12 @@ class ModalWindow{
         this.btnText2 = null;
         this.btnId2 = null;
         this.btnFuncName2 = null;
+        this.headerId = "modal-header-"+modalType;
+        this.bodyId = "modal-body-"+modalType;
+        this.footerId = "modal-footer-"+modalType;
         switch(modalType) {
             case 'rollDice':
+                this.modalName = "roll-the-dice-modal";
                 this.headerText = "Ваш ход!";
                 this.bodyText = "Совет.";
                 this.btnText1 = "Бросить кубики";
@@ -220,6 +227,7 @@ class ModalWindow{
                 this.btnFuncName1 = "game.rollTheDice()"
                 break;
             case 'buyField':
+                this.modalName = "buy-field-modal";
                 this.headerText = "Заплатите аренду.";
                 this.bodyText = "Попадая на чужие поля, вы должны выплачивать арнеду его владельцу.";
                 let sum = 100; //TODO
@@ -227,6 +235,8 @@ class ModalWindow{
                 this.btnText2 = "На аукцион.";
                 this.btnId1 = "modal-btn-buy-field";
                 this.btnId2 = "modal-btn-refuse";
+                this.btnFuncName1 = "game.currentPlayer.buyField()"
+                this.btnFuncName2 = "game.currentPlayer.refuseBuyField()"
                 isOneButton = false;
                 break;
             //TODO
@@ -243,17 +253,17 @@ class ModalWindow{
     }
     createModalWindowElem(isOneButton){
         const modal = document.createElement('div');
-        modal.classList.add('modal-block');
-        modal.setAttribute('id','modal-block');
+        modal.classList.add("modal-block");
+        modal.setAttribute('id',this.modalName);
         modal.insertAdjacentHTML('afterbegin',`
             
-                <div id="modal-header">
+                <div id=${this.headerId}>
                     <span>${this.headerText}</span>
                 </div>
-                <div id="modal-body">
+                <div id=${this.bodyId}>
                     <p>${this.bodyText}</p>
                 </div>
-                <div id="modal-footer">
+                <div id=${this.footerId}>
                     <div id=${this.btnId1} class="modal-btn modal-small-btn" onclick=${this.btnFuncName1}>
                         <span>${this.btnText1}</span>
                     </div>
@@ -265,14 +275,12 @@ class ModalWindow{
 
         document.getElementById("play-field").appendChild(modal);
 
-        if(isOneButton){
+        if(isOneButton) this.deleteSecondButton();
 
-            this.deleteSecondButton();
-        }
-        document.getElementById("modal-block").classList.add("modal-block");
-        document.getElementById("modal-header").classList.add("modal-header");
-        document.getElementById("modal-body").classList.add("modal-body");
-        document.getElementById("modal-footer").classList.add("modal-footer");
+        document.getElementById(this.modalName).classList.add(this.modalName);
+        document.getElementById(this.headerId).classList.add("modal-header");
+        document.getElementById(this.bodyId).classList.add("modal-body");
+        document.getElementById(this.footerId).classList.add("modal-footer");
         
         let btn1 = document.getElementById(this.btnId1);
         btn1.classList.add(this.btnId1);
@@ -281,16 +289,22 @@ class ModalWindow{
     }
     deleteSecondButton(){
         let btn2 = document.getElementById(this.btnId2);
-        document.getElementById("modal-footer").removeChild(btn2);
+        document.getElementById(this.footerId).removeChild(btn2);
         document.getElementById(this.btnId1).classList.remove("modal-small-btn");
+    }
+    open(){
+        document.getElementById(this.modalName).classList.add("open");
+    }
+    close(){
+        document.getElementById(this.modalName).classList.remove("open");
     }
 }
 
 
 
 function createModals(game){
-    rollTheDiceModal = new ModalWindow("rollDice",game);
-    // buyFieldModal = new ModalWindow("buyField",game);
+    rollDiceModal = new ModalWindow("rollDice",game);
+    buyFieldModal = new ModalWindow("buyField",game);
 }
 
 
@@ -469,8 +483,13 @@ class Player{
       createPlayer(id,number);
     }
     
+    buyField(){
+        buyFieldModal.close();
+    }
 
-    
+    refuseBuyField(){
+        buyFieldModal.close();
+    }
   
   }
 
@@ -493,6 +512,7 @@ class Game {
       }
       
     rollTheDice(){
+        rollDiceModal.close();
         //получение двух случайных чисел
         let randomNum1 = randomInteger(1, 6);
         let randomNum2 = randomInteger(1, 6);
@@ -502,7 +522,11 @@ class Game {
         // console.table(this.playersQueue);
         
         this.addRollDiceMessage(randomNum1,randomNum2);
-        this.addGotOnFieldMessage();
+        let curField = fields[this.currentPlayer.currentField-1]
+        if(curField && !curField.owner){
+            this.addGotOnFieldMessage();
+            buyFieldModal.open();
+        }
 
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
@@ -514,6 +538,8 @@ class Game {
         clearInterval(this.timerId);
 
         let curPlayerNumber = this.playersQueue[0].number;
+        
+        rollDiceModal.open();
         this.startTimer(curPlayerNumber);
     }
 
@@ -631,7 +657,6 @@ class Game {
         
         //изменение параметров фишки (анимация)
         let player = document.querySelector('.'+playersIds[playerNumber]);
-        console.log("player class: " +playersIds[playerNumber]);
         let curLen = getComputedStyle(player).getPropertyValue('--distance'+(playerNumber+1));
 
         this.currentPlayer.currentField = this.currentPlayer.fieldsPassedNumber % 40 + 1
@@ -701,11 +726,10 @@ function startGame(){
     // console.table(fields);
     addPlayersBlock(playerNum,game.playerList);
 
-    // createModalWindow({});
-    createModals(game);
+    createModals();
     setScalablePath(playerNum);
     setFieldParams();
-    
+    rollDiceModal.open();
     game.startTimer(0);
 }
 
