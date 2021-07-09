@@ -486,6 +486,9 @@ class Player{
     }
     
     buyField(){
+        console.log(this);
+        console.log("стоимость " + this.currentFieldObj.cost);
+
         buyFieldModal.close();
     }
 
@@ -520,14 +523,15 @@ class Game {
         let randomNum2 = randomInteger(1, 6);
         let randomSum = randomNum1 + randomNum2;
         this.movePlayer(randomSum);
-        
-        // console.table(this.playersQueue);
+   
         
         this.addRollDiceMessage(randomNum1,randomNum2);
         let curField = fields[this.currentPlayer.currentFieldNum-1]
         if(curField && !curField.owner){
             this.addGotOnFieldMessage();
             buyFieldModal.open();
+            // СОЗДАТЬ ТАЙМЕР НА10 СЕКУНД, ОТКЛЮЧИТЬ ЕГО ПО ИСТЕЧЕНИИ ВРЕМЕНИ ИЛИ ПО НАЖАТИЮ НА КНОПКУ
+            // ПОСМОТРЕТЬ МОЖНО ЛИ ВЫКЛЮЧИТЬ ХОДА, ЧТОБЫ ВКЛЮЧИТЬ ДРУГОЙ
         }
 
         this.playersQueue.shift();
@@ -651,7 +655,6 @@ class Game {
     }
 
     movePlayer(randomSum){
-        // console.table(this);
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
@@ -661,14 +664,13 @@ class Game {
         let player = document.querySelector('.'+playersIds[playerNumber]);
         let curLen = getComputedStyle(player).getPropertyValue('--distance'+(playerNumber+1));
 
-        this.currentPlayer.currentFieldNum = this.currentPlayer.fieldsPassedNumber % 40 + 1
+        this.currentPlayer.currentFieldNum = this.currentPlayer.fieldsPassedNumber % 40 + 1;
+        this.currentPlayer.currentFieldObj = fields[this.currentPlayer.currentFieldNum-1];
+
         let curFieldNum = this.currentPlayer.currentFieldNum;
 
         curLen = this.currentPlayer.currentLap*100+percentShift[curFieldNum-1];
         player.style.setProperty('--distance'+(playerNumber+1), curLen);
-
-
-        // console.log(this.playersQueue);
     }
 
     updatePlayersBlock(){
@@ -679,9 +681,7 @@ class Game {
 
     updateBackground(){
         let prevPlayerNumber = this.playersQueue[this.curNonLosersNumber-1].number;
-        // console.log("prev=" + prevPlayerNumber);
         let curPlayerNumber = this.playersQueue[0].number;
-        // console.log("cur=" + curPlayerNumber);
         let prevDiv = document.getElementById(playerPropBlockIds[prevPlayerNumber]);
         prevDiv.classList.remove("active");
         let curDiv = document.getElementById(playerPropBlockIds[curPlayerNumber]);
@@ -722,9 +722,9 @@ function createGame(playerNum,playerData){
 function startGame(){
     let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
-    createGame(playerNum, playerData);
     createFields();
-    // console.table(fields);
+    createGame(playerNum, playerData);
+    
     addPlayersBlock(playerNum,game.playerList);
 
     createModals();
