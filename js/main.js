@@ -41,7 +41,9 @@ const percentSingleAndHalfField = 3.40919091;
 
 let game;
 let fields = [];
-let modalRollDice;
+let rollDiceModal;
+let buyFieldModal;
+
 
 function addPlayersBlock(playerNumber, playerList){
     for(let i=0; i<playerNumber;i++){
@@ -195,6 +197,7 @@ function createFields(){
 }
 
 class ModalWindow{
+    //объект игры всегда должен называться game
     /*
     modalType - строка
     0 - "rollDice" - бросить кубики (h-"Ваш ход",b-"Какой-то совет",f-1:"бросить кубики")
@@ -207,12 +210,14 @@ class ModalWindow{
         let isOneButton = true;
         this.btnText2 = null;
         this.btnId2 = null;
+        this.btnFuncName2 = null;
         switch(modalType) {
             case 'rollDice':
                 this.headerText = "Ваш ход!";
                 this.bodyText = "Совет.";
                 this.btnText1 = "Бросить кубики";
                 this.btnId1 = "modal-btn-roll-dice";
+                this.btnFuncName1 = "game.rollTheDice()"
                 break;
             case 'buyField':
                 this.headerText = "Заплатите аренду.";
@@ -234,54 +239,58 @@ class ModalWindow{
             default:
                 break;
           }
-        this.createModalWindowElem(this.headerText,this.bodyText,isOneButton,this.btnText1,this.btnText2,this.btnId1,this.btnId2);
+        this.modalElement = this.createModalWindowElem(isOneButton);
     }
-    createModalWindowElem(headerText,bodyText,isOneButton,btnText1,btnText2,btnId1,btnId2){
+    createModalWindowElem(isOneButton){
         const modal = document.createElement('div');
         modal.classList.add('modal-block');
         modal.setAttribute('id','modal-block');
         modal.insertAdjacentHTML('afterbegin',`
             
                 <div id="modal-header">
-                    <span>${headerText}</span>
+                    <span>${this.headerText}</span>
                 </div>
                 <div id="modal-body">
-                    <p>${bodyText}</p>
+                    <p>${this.bodyText}</p>
                 </div>
                 <div id="modal-footer">
-                    <div id=${btnId1} onclick="game.rollTheDice()">
-                        <span>${btnText1}</span>
+                    <div id=${this.btnId1} class="modal-btn modal-small-btn" onclick=${this.btnFuncName1}>
+                        <span>${this.btnText1}</span>
+                    </div>
+                    <div id=${this.btnId2} class="modal-btn modal-small-btn" onclick=${this.btnFuncName2}>
+                        <span>${this.btnText2}</span>
                     </div>
                 </div>
             `);
-        if(!isOneButton){
-            let div = document.createElement('div');
-            div.setAttribute('id',btnId2);
-            let span = document.createElement('span');
-            span.textContent = btnText2;
-            div.appendChild(span);
-            modal.getElementById("modal-footer").appendChild(div);
-            modal.getElementById(btnId1).classList.add("modal-small-btn");
-            modal.getElementById(btnId2).classList.add("modal-small-btn");
-            document.getElementById(btnId2).classList.add(btnId2);
-        }
 
         document.getElementById("play-field").appendChild(modal);
-    
+
+        if(isOneButton){
+
+            this.deleteSecondButton();
+        }
         document.getElementById("modal-block").classList.add("modal-block");
         document.getElementById("modal-header").classList.add("modal-header");
         document.getElementById("modal-body").classList.add("modal-body");
         document.getElementById("modal-footer").classList.add("modal-footer");
-        document.getElementById(btnId1).classList.add(btnId1);
         
+        let btn1 = document.getElementById(this.btnId1);
+        btn1.classList.add(this.btnId1);
+        btn1.classList.add("modal-btn");
         return modal;
+    }
+    deleteSecondButton(){
+        let btn2 = document.getElementById(this.btnId2);
+        document.getElementById("modal-footer").removeChild(btn2);
+        document.getElementById(this.btnId1).classList.remove("modal-small-btn");
     }
 }
 
 
 
-function createModals(){
-    rollTheDice = new ModalWindow("rollDice");
+function createModals(game){
+    rollTheDiceModal = new ModalWindow("rollDice",game);
+    // buyFieldModal = new ModalWindow("buyField",game);
 }
 
 
@@ -693,7 +702,7 @@ function startGame(){
     addPlayersBlock(playerNum,game.playerList);
 
     // createModalWindow({});
-    createModals();
+    createModals(game);
     setScalablePath(playerNum);
     setFieldParams();
     
