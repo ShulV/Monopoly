@@ -66,7 +66,7 @@ function addPlayersBlock(playerNumber, playerList){
         let timerSpan = document.createElement("span");
         timerSpan.setAttribute("id","timer-text"+i);
         timerSpan.setAttribute("class","timer-text");
-        let timerText = document.createTextNode(game.remainingTime);
+        let timerText = document.createTextNode(game.remainingMovingTime);
         timerSpan.appendChild(timerText);
         timerSpan.style.display = "none";
         div.appendChild(timerSpan);
@@ -478,24 +478,40 @@ class Player{
       this.currentFieldObj = fields[0];
       this.currentLap = 0;
       this.fieldsPassedNumber = 0;
-      this.isLoser;
+      this.isLoser = false;
       this.purchasedFields = [];
+      this.game = null;
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.id);
       createPlayer(id,number);
     }
-    
-    buyField(){
-        console.log(this);
-        console.log("стоимость " + this.currentFieldObj.cost);
+    addGameInProp(game){
+        this.game = game;
+    }
 
+
+    buyField(){
+        // console.log(this);
+        // console.log("стоимость " + this.currentFieldObj.cost);
+
+        console.log("таймер остановлен");
+        this.game.outerResolve();
+        clearTimeout(this.game.purchaseTimerId);
         buyFieldModal.close();
     }
 
     refuseBuyField(){
+        clearTimeout(this.game.purchaseTimerId);
         buyFieldModal.close();
     }
   
+  }
+
+  function sleep(gameObj,ms) {
+    return new Promise(resolve => {
+      gameObj.outerResolve = resolve;
+      gameObj.purchaseTimerId = setTimeout(resolve, ms);
+    });
   }
 
 class Game {
@@ -505,10 +521,15 @@ class Game {
         this.playerList = playerList;
         this.currentPlayer = this.playerList[0]; 
         this.playersQueue = []; //очередь игроков  
-        this.maxMovingTime=5; //максимальное время хода
-        this.remainingTime = this.maxMovingTime; //оставшееся время таймера
-        this.timerId; //таймер
-        this.startTime=0; //время старта таймера
+        //таймер хода
+        this.maxMovingTime=60; //максимальное время хода
+        this.startTime=0; //время старта таймера ожидания хода
+        this.remainingMovingTime = this.maxMovingTime; //оставшееся время таймера хода
+        this.movingTimerId; //таймер времени ожидания хода
+        //таймер покупки
+        this.maxPurchaseTime = 10; //максимальное вреия покупки поля
+        this.purchaseTimerId; //таймер времени ожидания покупки
+        this.outerResolve; //хранение функции для промиса у таймера покупки
         
 
         for(let i=0;i<playerNumber;i++){
@@ -516,8 +537,10 @@ class Game {
         }  
       }
       
-    rollTheDice(){
+     
+    async rollTheDice(){
         rollDiceModal.close();
+        clearInterval(this.movingTimerId);
         //получение двух случайных чисел
         let randomNum1 = randomInteger(1, 6);
         let randomNum2 = randomInteger(1, 6);
@@ -530,12 +553,13 @@ class Game {
         if(curField && !curField.owner){
             this.addGotOnFieldMessage();
             buyFieldModal.open();
-            let isOpen = true;
-            // while(isOpen){
-            //     isOpen = buyFieldModal.modalElement.classList.contains('open');
-            // }
+            console.log("после sleep")
+            await sleep(this,this.maxPurchaseTime*1000);
+            console.log("до sleep")
+            
         }
-
+        console.log("после IFа")
+        
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
 
@@ -543,16 +567,16 @@ class Game {
 
         this.updatePlayersBlock();
         
-        clearInterval(this.timerId);
+        
 
         let curPlayerNumber = this.playersQueue[0].number;
         
         rollDiceModal.open();
-        this.startTimer(curPlayerNumber);
+        this.startMovingTimer(curPlayerNumber);
     }
 
     playerLose(){
-        clearInterval(this.timerId);
+        clearInterval(this.movingTimerId);
         this.addSurrenderMessage();
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
@@ -574,7 +598,7 @@ class Game {
             this.playerWin();
             return;
         }
-        this.startTimer(this.currentPlayer.number);
+        this.startMovingTimer(this.currentPlayer.number);
     }
 
     playerWin(){
@@ -627,7 +651,7 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentFieldNum;
+        // let fieldNum = this.currentPlayer.currentFieldNum;
         
         let msgText = " сдаётся";
         text = document.createTextNode(msgText);
@@ -637,18 +661,18 @@ class Game {
         doScrollDown('chat-block');
     }
 
-    startTimer(curPlayerNumber){
+    startMovingTimer(curPlayerNumber){
         this.startTime = new Date().getTime();//время старта в милисекундах
-        this.timerId  = setInterval(
+        this.movingTimerId  = setInterval(
             ()=>{
         let curTime = new Date().getTime();
-        let remainingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
+        let remainingMovingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
         
 
         let timerSpan = document.getElementById("timer-text"+curPlayerNumber);
-        timerSpan.textContent = remainingTime;
+        timerSpan.textContent = remainingMovingTime;
 
-        if(remainingTime==0){
+        if(remainingMovingTime==0){
             this.playerLose();
             
         }
@@ -719,6 +743,9 @@ function createGame(playerNum,playerData){
     }
     
     game = new Game(playerNum,players);
+    for(let i=0;i<playerNum;i++){
+        players[i].addGameInProp(game);
+    }
 }
 
 function startGame(){
@@ -733,7 +760,7 @@ function startGame(){
     setScalablePath(playerNum);
     setFieldParams();
     rollDiceModal.open();
-    game.startTimer(0);
+    game.startMovingTimer(0);
 }
 
 
