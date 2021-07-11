@@ -530,8 +530,10 @@ class Game {
         if(curField && !curField.owner){
             this.addGotOnFieldMessage();
             buyFieldModal.open();
-            // СОЗДАТЬ ТАЙМЕР НА10 СЕКУНД, ОТКЛЮЧИТЬ ЕГО ПО ИСТЕЧЕНИИ ВРЕМЕНИ ИЛИ ПО НАЖАТИЮ НА КНОПКУ
-            // ПОСМОТРЕТЬ МОЖНО ЛИ ВЫКЛЮЧИТЬ ХОДА, ЧТОБЫ ВКЛЮЧИТЬ ДРУГОЙ
+            let isOpen = true;
+            // while(isOpen){
+            //     isOpen = buyFieldModal.modalElement.classList.contains('open');
+            // }
         }
 
         this.playersQueue.shift();
