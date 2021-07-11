@@ -39,6 +39,11 @@ const percentShift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
 const percentSingleField = 2.27272727;
 const percentSingleAndHalfField = 3.40919091;
 
+let rollDiceButtonId = "modal-btn-roll-dice";
+let buyFieldButtonId = "modal-btn-buy-field";
+let putUpAuctionButtonId = "modal-btn-auction";
+
+
 let game;
 let fields = [];
 let rollDiceModal;
@@ -172,6 +177,11 @@ function setFieldParams(){
     
 }
 
+function changeModalBtnText(buttonId,newText){
+    let btnSpan = document.querySelector("#"+buttonId+" span");
+    btnSpan.textContent = newText;
+}
+
 function createFields(){
     for(let i=0;i<40;i++){
         let fieldNum = i+1;
@@ -223,7 +233,7 @@ class ModalWindow{
                 this.headerText = "Ваш ход!";
                 this.bodyText = "Совет.";
                 this.btnText1 = "Бросить кубики";
-                this.btnId1 = "modal-btn-roll-dice";
+                this.btnId1 = rollDiceButtonId;
                 this.btnFuncName1 = "game.rollTheDice()"
                 break;
             case 'buyField':
@@ -233,10 +243,10 @@ class ModalWindow{
                 let sum = 100; //TODO
                 this.btnText1 = "Купить за " + sum + "k";
                 this.btnText2 = "На аукцион.";
-                this.btnId1 = "modal-btn-buy-field";
-                this.btnId2 = "modal-btn-refuse";
+                this.btnId1 = buyFieldButtonId;
+                this.btnId2 = putUpAuctionButtonId;
                 this.btnFuncName1 = "game.currentPlayer.buyField()"
-                this.btnFuncName2 = "game.currentPlayer.refuseBuyField()"
+                this.btnFuncName2 = "game.currentPlayer.putUpAuctionField()"
                 isOneButton = false;
                 break;
             //TODO
@@ -491,8 +501,8 @@ class Player{
 
 
     buyField(){
-        // console.log(this);
-        // console.log("стоимость " + this.currentFieldObj.cost);
+        console.log(this);
+        console.log("стоимость " + this.currentFieldObj.cost);
 
         console.log("таймер остановлен");
         this.game.outerResolve();
@@ -500,7 +510,9 @@ class Player{
         buyFieldModal.close();
     }
 
-    refuseBuyField(){
+    putUpAuctionField(){
+        console.log("таймер остановлен");
+        this.game.outerResolve();
         clearTimeout(this.game.purchaseTimerId);
         buyFieldModal.close();
     }
@@ -552,6 +564,9 @@ class Game {
         let curField = fields[this.currentPlayer.currentFieldNum-1]
         if(curField && !curField.owner){
             this.addGotOnFieldMessage();
+            let fieldCost = this.currentPlayer.currentFieldObj.cost;
+            let newBtnText = "Кубить за " + fieldCost + "k";
+            changeModalBtnText(buyFieldButtonId,newBtnText);
             buyFieldModal.open();
             console.log("после sleep")
             await sleep(this,this.maxPurchaseTime*1000);
