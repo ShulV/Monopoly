@@ -238,7 +238,7 @@ class ModalWindow{
                 break;
             case 'buyField':
                 this.modalName = "buy-field-modal";
-                this.headerText = "Заплатите аренду.";
+                this.headerText = "Покупаем?";
                 this.bodyText = "Попадая на чужие поля, вы должны выплачивать арнеду его владельцу.";
                 let sum = 100; //TODO
                 this.btnText1 = "Купить за " + sum + "k";
