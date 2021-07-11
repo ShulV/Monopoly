@@ -158,14 +158,14 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     margin-top:15px;
 }
 
-.roll-dice-btn {
+/* .roll-dice-btn {
     width:144px;
     height: 72px;
     position: absolute;
     bottom: 200px;
     left: 250px;
     
-}
+} */
 
 .modal-block.open {
     opacity: 1;
