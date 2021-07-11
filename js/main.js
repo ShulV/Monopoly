@@ -489,8 +489,10 @@ class Player{
       this.currentLap = 0;
       this.fieldsPassedNumber = 0;
       this.isLoser = false;
+      
       this.purchasedFields = [];
       this.game = null;
+      
     //   let src = "images/" + String(this.color) + ".png";
       let id = String(this.id);
       createPlayer(id,number);
@@ -501,18 +503,16 @@ class Player{
 
 
     buyField(){
-        console.log(this);
-        console.log("стоимость " + this.currentFieldObj.cost);
-
-        console.log("таймер остановлен");
         this.game.outerResolve();
         clearTimeout(this.game.purchaseTimerId);
+        this.game.pressedModalButton = true;
+        console.log(this.game.pressedModalButton)
         buyFieldModal.close();
     }
 
     putUpAuctionField(){
-        console.log("таймер остановлен");
         this.game.outerResolve();
+        this.game.pressedModalButton = true;
         clearTimeout(this.game.purchaseTimerId);
         buyFieldModal.close();
     }
@@ -524,6 +524,7 @@ class Player{
       gameObj.outerResolve = resolve;
       gameObj.purchaseTimerId = setTimeout(resolve, ms);
     });
+    
   }
 
 class Game {
@@ -534,15 +535,16 @@ class Game {
         this.currentPlayer = this.playerList[0]; 
         this.playersQueue = []; //очередь игроков  
         //таймер хода
-        this.maxMovingTime=60; //максимальное время хода
+        this.maxMovingTime=6; //максимальное время хода
         this.startTime=0; //время старта таймера ожидания хода
         this.remainingMovingTime = this.maxMovingTime; //оставшееся время таймера хода
         this.movingTimerId; //таймер времени ожидания хода
         //таймер покупки
-        this.maxPurchaseTime = 10; //максимальное вреия покупки поля
+        this.maxPurchaseTime = 5; //максимальное вреия покупки поля
         this.purchaseTimerId; //таймер времени ожидания покупки
         this.outerResolve; //хранение функции для промиса у таймера покупки
         
+        this.pressedModalButton = false;
 
         for(let i=0;i<playerNumber;i++){
             this.playersQueue.push(playerList[i]);
@@ -568,26 +570,29 @@ class Game {
             let newBtnText = "Кубить за " + fieldCost + "k";
             changeModalBtnText(buyFieldButtonId,newBtnText);
             buyFieldModal.open();
-            console.log("после sleep")
-            await sleep(this,this.maxPurchaseTime*1000);
-            console.log("до sleep")
             
+            await sleep(this,this.maxPurchaseTime*1000);
+
+            if(this.pressedModalButton){
+                this.pressedModalButton = false;
+                console.log("нажал")
+            }
+            else {
+                console.log("не нажал")
+                this.playerLose();
+                buyFieldModal.close();
+                // ОЧЕРЕДЬ ПРЫГАЕТ ЧЕРЕЗ ОДНОГО ____ ИСПРАВИТЬ
+            }   
         }
-        console.log("после IFа")
-        
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
-
         this.currentPlayer = this.playersQueue[0];
-
-        this.updatePlayersBlock();
-        
-        
+        this.updatePlayersBlock();        
 
         let curPlayerNumber = this.playersQueue[0].number;
+        this.startMovingTimer(curPlayerNumber);
         
         rollDiceModal.open();
-        this.startMovingTimer(curPlayerNumber);
     }
 
     playerLose(){
