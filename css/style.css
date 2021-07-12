@@ -476,4 +476,26 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     color: #9fa127;
 }
 
+.red-bg {
+    background-color:rgb(255, 110, 110)
+}
+
+.green-bg {
+    background-color:#3fc27a;
+}
+
+.blue-bg {
+    background-color:#5b9bcc;
+}
+
+.purple-bg {
+    background-color: #c973ff;
+}
+
+.yellow-bg {
+    background-color: #fdff8c;
+}
+
+
+
 /* background: center/contain no-repeat; */

@@ -4,6 +4,7 @@ const playersColors = ["red","green","blue","purple","yellow"];
 const playersIds = ["red-player", "green-player", "blue-player", "purple-player", "yellow-player"];
 const playerPropBlockIds = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",];
 const classColorName = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"];
+const classBackgroundName = ["red-bg", "green-bg", "blue-bg", "purple-bg", "yellow-bg"];
 const fieldNames = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
 "Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
 "Jackpot","American airlines","?","Lufthansa","British airways","Ford","McDonald's","BurgerKing","Rovio","KFC",
@@ -83,6 +84,15 @@ function addPlayersBlock(playerNumber, playerList){
         document.getElementById('players-block').appendChild(div);
     }
     
+}
+
+function addBgToPurchasedField(playerBuyer,fieldNumber){
+    let playerNum = playerBuyer.number;
+    let bgColorClass = classBackgroundName[playerNum];
+    let fieldBlockId = "play-cell-"+(fieldNumber);
+    console.log(fieldBlockId);
+    let fieldBlock = document.getElementById(fieldBlockId);
+    fieldBlock.classList.add(bgColorClass);
 }
 
 function setFieldParams(){
@@ -444,9 +454,19 @@ class Field {
         this.monopolyNum = monopolyNum;
         this.rentLevel = 0;
 
-        if(monopolyNum == 0) this.rentMessage = rentMessages[2];
-        else if(monopolyNum == 9) this.rentMessage = rentMessages[1];
-        else this.rentMessage = rentMessages[0];
+        if(monopolyNum == 0) {
+            this.rentMessage = rentMessages[2];
+            this.maxFieldsInMonopoly = 4;
+        }
+        else if(monopolyNum == 9) {
+            this.rentMessage = rentMessages[1];
+            this.maxFieldsInMonopoly = 2;
+        }
+        else {
+            this.rentMessage = rentMessages[0];
+            if(monopolyNum == 1 || monopolyNum == 8) this.maxFieldsInMonopoly = 2; //парфюмерия или электроника
+            else this.maxFieldsInMonopoly = 3;
+        }
 
         this.owner = null;
         this.isMonopoly = false;
@@ -514,14 +534,15 @@ class Player{
         this.game.pressedModalButton = true;
         let fieldCost = this.currentFieldObj.cost;
         if (this.money > fieldCost){
-            console.log("денег хватило, купили");
+            // console.log("денег хватило, купили");
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
-            console.log(this.purchasedFields);
+            addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
+            // console.log(this.purchasedFields);
         }
         else {
-            console.log("денег не хватило, не купили");
+            // console.log("денег не хватило, не купили");
         }
         buyFieldModal.close();
     }
@@ -803,6 +824,7 @@ function startGame(){
     let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createFields();
+    // console.table(fields);
     createGame(playerNum, playerData);
     
     addPlayersBlock(playerNum,game.playerList);
