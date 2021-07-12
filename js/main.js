@@ -539,6 +539,7 @@ class Player{
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
+            this.game.addBuyingFieldMessage(fieldCost);
             // console.log(this.purchasedFields);
         }
         else {
@@ -717,6 +718,24 @@ class Game {
         // let fieldNum = this.currentPlayer.currentFieldNum;
         
         let msgText = " сдаётся";
+        text = document.createTextNode(msgText);
+  
+        par.appendChild(text);
+        document.getElementById('chat-block').appendChild(par);
+        doScrollDown('chat-block');
+    }
+
+    addBuyingFieldMessage(money){
+        let colorClass = classColorName[this.currentPlayer.number];
+        let par = document.createElement("p");
+        let nameText = document.createElement("span");
+        nameText.setAttribute("class",colorClass);
+        let text = document.createTextNode(this.currentPlayer.name);
+        nameText.appendChild(text);
+        par.appendChild(nameText);
+        let fieldNum = this.currentPlayer.currentFieldNum;
+        
+        let msgText = " покупает " + fieldNames[fieldNum-1] + " за " + money + "k";
         text = document.createTextNode(msgText);
   
         par.appendChild(text);
