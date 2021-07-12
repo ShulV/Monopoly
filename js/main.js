@@ -512,6 +512,17 @@ class Player{
     buyField(){
         this.game.outerResolve();
         this.game.pressedModalButton = true;
+        let fieldCost = this.currentFieldObj.cost;
+        if (this.money > fieldCost){
+            console.log("денег хватило, купили");
+            this.money -= fieldCost;
+            this.purchasedFields.push(this.currentFieldObj);
+            this.currentFieldObj.owner = this;
+            console.log(this.purchasedFields);
+        }
+        else {
+            console.log("денег не хватило, не купили");
+        }
         buyFieldModal.close();
     }
 
@@ -630,7 +641,6 @@ class Game {
             return;
         }
         this.startMovingTimer(this.currentPlayer.number);
-        console.log("PLAYER LOSE timer запустил")
     }
 
     playerWin(){
@@ -703,7 +713,6 @@ class Game {
             let remainingMovingTime = this.maxMovingTime - Math.floor((curTime - this.startMovingTime)/1000);
             timerSpan = document.getElementById("timer-text"+curPlayerNumber);
             timerSpan.textContent = remainingMovingTime;
-            console.log("remainingMovingTime = "+remainingMovingTime)
             if(remainingMovingTime<=0) this.playerLose();
         }, 1000);   
     }
@@ -718,7 +727,6 @@ class Game {
             let remainingPurchaseTime = this.maxPurchaseTime - Math.floor((curTime - this.startBuyFieldTime)/1000);
             timerSpan = document.getElementById("timer-text"+curPlayerNumber);
             timerSpan.textContent = remainingPurchaseTime;
-            console.log("BuyFieldTimer = "+remainingPurchaseTime)
             if(remainingPurchaseTime<=0) clearInterval(this.purchaseTimerId2);
         }, 1000);   
     }
@@ -804,7 +812,6 @@ function startGame(){
     setFieldParams();
     rollDiceModal.open();
     game.startMovingTimer(0);
-    console.log("START timer запустил")
 }
 
 
