@@ -219,8 +219,10 @@ class ModalWindow{
     3 - "payBankRent" - заплатить банку (h-"Заплатите банку.",b-"Вы можете получить деньги, продав филиалы или заложив фирму - для этого кликните на неё.",f-1:"заплатить 100к")
     4 - "auction" - аукцион (h-"На аукционе fieldName!",b-"Вы можете либо поднять ставку на 100к, либо покинуть аукцион.",f-1:"Поднять до 3100к", 2:"отказаться")
     */
-    constructor(modalType){
+    constructor(modalType,game){
         let isOneButton = true;
+        this.modalType = modalType;
+        this.game = game;
         this.btnText2 = null;
         this.btnId2 = null;
         this.btnFuncName2 = null;
@@ -304,9 +306,14 @@ class ModalWindow{
     }
     open(){
         document.getElementById(this.modalName).classList.add("open");
+        if(this.modalType == "buyField")
+            this.game.startBuyFieldTimer(this.game.currentPlayer.number);
+
     }
     close(){
         document.getElementById(this.modalName).classList.remove("open");
+        clearTimeout(this.game.purchaseTimerId);
+        clearInterval(this.game.purchaseTimerId2);
     }
 }
 
@@ -504,9 +511,7 @@ class Player{
 
     buyField(){
         this.game.outerResolve();
-        clearTimeout(this.game.purchaseTimerId);
         this.game.pressedModalButton = true;
-        console.log(this.game.pressedModalButton)
         buyFieldModal.close();
     }
 
@@ -535,13 +540,16 @@ class Game {
         this.currentPlayer = this.playerList[0]; 
         this.playersQueue = []; //очередь игроков  
         //таймер хода
-        this.maxMovingTime=6; //максимальное время хода
-        this.startTime=0; //время старта таймера ожидания хода
+        this.startMovingTime;
+        this.maxMovingTime=10; //максимальное время хода
+        this.Time=0; //время старта таймера ожидания хода
         this.remainingMovingTime = this.maxMovingTime; //оставшееся время таймера хода
         this.movingTimerId; //таймер времени ожидания хода
         //таймер покупки
+        this.startBuyFieldTime;
         this.maxPurchaseTime = 5; //максимальное вреия покупки поля
-        this.purchaseTimerId; //таймер времени ожидания покупки
+        this.purchaseTimerId; //таймер времени ожидания покупки для setTimeout (для ожидания)
+        this.purchaseTimerId2; //таймер времени ожидания покупки для setInterval (для отображения)
         this.outerResolve; //хранение функции для промиса у таймера покупки
         
         this.pressedModalButton = false;
@@ -551,18 +559,18 @@ class Game {
         }  
       }
       
-     
     async rollTheDice(){
         let wasRemovedPlayer = false;
         rollDiceModal.close();
+
         clearInterval(this.movingTimerId);
+        clearInterval(this.purchaseTimerId2);
         //получение двух случайных чисел
         let randomNum1 = randomInteger(1, 6);
         let randomNum2 = randomInteger(1, 6);
         let randomSum = randomNum1 + randomNum2;
         this.movePlayer(randomSum);
    
-        
         this.addRollDiceMessage(randomNum1,randomNum2);
         let curField = fields[this.currentPlayer.currentFieldNum-1]
         if(curField && !curField.owner){
@@ -576,16 +584,11 @@ class Game {
 
             if(this.pressedModalButton){
                 this.pressedModalButton = false;
-                console.log("нажал")
-
-                
             }
             else {
-                console.log("не нажал")
                 this.playerLose();
                 buyFieldModal.close();
                 wasRemovedPlayer = true;
-                // ОЧЕРЕДЬ ПРЫГАЕТ ЧЕРЕЗ ОДНОГО ____ ИСПРАВИТЬ
             }   
         }
         if (!wasRemovedPlayer){
@@ -596,8 +599,6 @@ class Game {
 
             wasRemovedPlayer = false; //возврат состояния флага
         }
-          
-
         let curPlayerNumber = this.playersQueue[0].number;
         this.startMovingTimer(curPlayerNumber);
         
@@ -606,6 +607,7 @@ class Game {
 
     playerLose(){
         clearInterval(this.movingTimerId);
+        clearInterval(this.purchaseTimerId2);
         this.addSurrenderMessage();
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
@@ -628,6 +630,7 @@ class Game {
             return;
         }
         this.startMovingTimer(this.currentPlayer.number);
+        console.log("PLAYER LOSE timer запустил")
     }
 
     playerWin(){
@@ -691,22 +694,33 @@ class Game {
     }
 
     startMovingTimer(curPlayerNumber){
-        this.startTime = new Date().getTime();//время старта в милисекундах
-        this.movingTimerId  = setInterval(
-            ()=>{
-        let curTime = new Date().getTime();
-        let remainingMovingTime = this.maxMovingTime - Math.floor((curTime - this.startTime)/1000);
-        
-
         let timerSpan = document.getElementById("timer-text"+curPlayerNumber);
-        timerSpan.textContent = remainingMovingTime;
+        timerSpan.textContent = this.maxMovingTime;
+        this.startMovingTime = new Date().getTime();//время старта в милисекундах
+        this.movingTimerId  = setInterval(
+        ()=>{
+            let curTime = new Date().getTime();
+            let remainingMovingTime = this.maxMovingTime - Math.floor((curTime - this.startMovingTime)/1000);
+            timerSpan = document.getElementById("timer-text"+curPlayerNumber);
+            timerSpan.textContent = remainingMovingTime;
+            console.log("remainingMovingTime = "+remainingMovingTime)
+            if(remainingMovingTime<=0) this.playerLose();
+        }, 1000);   
+    }
 
-        if(remainingMovingTime==0){
-            this.playerLose();
-            
-        }
-            }, 1000);
-        
+    startBuyFieldTimer(curPlayerNumber){
+        let timerSpan = document.getElementById("timer-text"+curPlayerNumber);
+            timerSpan.textContent = this.maxPurchaseTime;
+        this.startBuyFieldTime = new Date().getTime();//время старта в милисекундах
+        this.purchaseTimerId2  = setInterval(
+        ()=>{
+            let curTime = new Date().getTime();
+            let remainingPurchaseTime = this.maxPurchaseTime - Math.floor((curTime - this.startBuyFieldTime)/1000);
+            timerSpan = document.getElementById("timer-text"+curPlayerNumber);
+            timerSpan.textContent = remainingPurchaseTime;
+            console.log("BuyFieldTimer = "+remainingPurchaseTime)
+            if(remainingPurchaseTime<=0) clearInterval(this.purchaseTimerId2);
+        }, 1000);   
     }
 
     movePlayer(randomSum){
@@ -785,11 +799,12 @@ function startGame(){
     
     addPlayersBlock(playerNum,game.playerList);
 
-    createModals();
+    createModals(game);
     setScalablePath(playerNum);
     setFieldParams();
     rollDiceModal.open();
     game.startMovingTimer(0);
+    console.log("START timer запустил")
 }
 
 
