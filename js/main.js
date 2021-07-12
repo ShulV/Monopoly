@@ -553,6 +553,7 @@ class Game {
       
      
     async rollTheDice(){
+        let wasRemovedPlayer = false;
         rollDiceModal.close();
         clearInterval(this.movingTimerId);
         //получение двух случайных чисел
@@ -576,18 +577,26 @@ class Game {
             if(this.pressedModalButton){
                 this.pressedModalButton = false;
                 console.log("нажал")
+
+                
             }
             else {
                 console.log("не нажал")
                 this.playerLose();
                 buyFieldModal.close();
+                wasRemovedPlayer = true;
                 // ОЧЕРЕДЬ ПРЫГАЕТ ЧЕРЕЗ ОДНОГО ____ ИСПРАВИТЬ
             }   
         }
-        this.playersQueue.shift();
-        this.playersQueue.push(this.currentPlayer);
-        this.currentPlayer = this.playersQueue[0];
-        this.updatePlayersBlock();        
+        if (!wasRemovedPlayer){
+            this.playersQueue.shift();
+            this.playersQueue.push(this.currentPlayer);
+            this.updatePlayersBlock();     
+            this.currentPlayer = this.playersQueue[0];
+
+            wasRemovedPlayer = false; //возврат состояния флага
+        }
+          
 
         let curPlayerNumber = this.playersQueue[0].number;
         this.startMovingTimer(curPlayerNumber);
