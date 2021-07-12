@@ -257,7 +257,7 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
 }
 
 .play-cell {
-    outline: 2px solid #778488;
+    outline: 2px solid #2d2e38;
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -477,23 +477,23 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
 }
 
 .red-bg {
-    background-color:rgb(255, 110, 110)
+    background-color:#ea8280;
 }
 
 .green-bg {
-    background-color:#3fc27a;
+    background-color:#b8e58d;
 }
 
 .blue-bg {
-    background-color:#5b9bcc;
+    background-color:#6ec5ef;
 }
 
 .purple-bg {
-    background-color: #c973ff;
+    background-color: #bda1f0;
 }
 
 .yellow-bg {
-    background-color: #fdff8c;
+    background-color: #f6fa00;
 }
 
 
