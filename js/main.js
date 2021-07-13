@@ -40,6 +40,8 @@ const percentShift = [0,3.5,5.7,7.9,10.1,12.4,14.6,16.8,19,21.2,
 const percentSingleField = 2.27272727;
 const percentSingleAndHalfField = 3.40919091;
 
+const startBonus = 1000;
+
 let rollDiceButtonId = "modal-btn-roll-dice";
 let buyFieldButtonId = "modal-btn-buy-field";
 let putUpAuctionButtonId = "modal-btn-auction";
@@ -499,49 +501,42 @@ class SpecialField{
 
 class StartField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
+        this.startBonus = startBonus;
+    }
+    addStartBonus(){
+        game.currentPlayer.money += this.startBonus;
+        game,addMessage("startFieldBonus");
     }
 }
 
 class IncomeField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
     }
 }
 
 class RandomActivityField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
     }
 }
 
 class JailVisitingField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
     }
 }
 
 class JackpotField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
     }
 }
 
 class JailField extends SpecialField{
     constructor(name,fieldNum,game){
-        this.name = name;
-        this.fieldNum = fieldNum;
-        this.game = game;
+        super(name,fieldNum,game);
     }
 }
 
@@ -609,7 +604,7 @@ class Player{
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
-            this.game.addBuyingFieldMessage(fieldCost);
+            this.game.addMessage("buyingField");
             
         }
 
@@ -672,10 +667,10 @@ class Game {
         let randomSum = randomNum1 + randomNum2;
         this.movePlayer(randomSum);
    
-        this.addRollDiceMessage(randomNum1,randomNum2);
+        this.addMessage("rollDice",randomNum1,randomNum2);
         let curField = fields[this.currentPlayer.currentFieldNum-1]
         if(curField && !curField.owner){
-            this.addGotOnFieldMessage();
+            this.addMessage("gotOnField");
             let fieldCost = this.currentPlayer.currentFieldObj.cost;
             let newBtnText = "Кубить за " + fieldCost + "k";
             changeModalBtnText(buyFieldButtonId,newBtnText);
@@ -709,7 +704,7 @@ class Game {
     playerLose(){
         clearInterval(this.movingTimerId);
         clearInterval(this.purchaseTimerId2);
-        this.addSurrenderMessage();
+        this.addMessage("surrender");
         this.playersQueue.shift();
         this.playersQueue.push(this.currentPlayer);
         this.currentPlayer = this.playersQueue[0];
@@ -738,25 +733,34 @@ class Game {
         alert(winnerName + " Победил!");
     }
 
-    addRollDiceMessage(num1,num2){
-        let colorClass = classColorName[this.currentPlayer.number];
-        let par = document.createElement("p");
-        let nameText = document.createElement("span");
-        nameText.setAttribute("class",colorClass);
-        let text = document.createTextNode(this.currentPlayer.name);
-        nameText.appendChild(text);
-        par.appendChild(nameText);
+    // addRollDiceMessage(num1,num2){
+    //     let colorClass = classColorName[this.currentPlayer.number];
+    //     let par = document.createElement("p");
+    //     let nameText = document.createElement("span");
+    //     nameText.setAttribute("class",colorClass);
+    //     let text = document.createTextNode(this.currentPlayer.name);
+    //     nameText.appendChild(text);
+    //     par.appendChild(nameText);
 
-        let msgText = " выбрасывает "+String(num1)+":"+String(num2);
-        text = document.createTextNode(msgText);
+    //     let msgText = " выбрасывает "+String(num1)+":"+String(num2);
+    //     text = document.createTextNode(msgText);
   
-        par.appendChild(text);
-        document.getElementById('chat-block').appendChild(par);
-        doScrollDown('chat-block');
+    //     par.appendChild(text);
+    //     document.getElementById('chat-block').appendChild(par);
+    //     doScrollDown('chat-block');
         
-    }
-
-    addGotOnFieldMessage(){
+    // }
+    addMessage(msgType,num1=undefined,num2=undefined){
+        /*
+        msgType: 
+        "rollDice" - бросок кубика (используются параметры num1,num2)
+        "gotOnField" - попадание на поле
+        "surrender" - игрок сдается/проигрывает
+        "buyingField" - покупка поля
+        "moneyLap" - добавление денег за проход очереднего круга
+        "" - 
+        
+        */
         let colorClass = classColorName[this.currentPlayer.number];
         let par = document.createElement("p");
         let nameText = document.createElement("span");
@@ -764,72 +768,110 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
+        let msgText;
         let fieldNum = this.currentPlayer.currentFieldNum;
-        
-        let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
+        switch(msgType){
+        case "rollDice":
+            msgText = " выбрасывает "+String(num1)+":"+String(num2);
+            break;
+        case "gotOnField":
+            msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
+            break;
+        case "surrender":
+            msgText = " сдаётся";
+            break;
+        case "buyingField":
+            let money = this.currentPlayer.currentFieldObj.cost;
+            msgText = " покупает " + fieldNames[fieldNum-1] + " за " + money + "k";
+            break;
+        case "moneyLap":
+            let moneyForLap = 2000;
+            msgText = " проходит очередной круг и получает " + moneyForLap + "k";
+            break;  
+        case "startFieldBonus":
+            msgText = " проходит очередной круг и получает " + startBonus + "k";
+            break;
+        }
         text = document.createTextNode(msgText);
-  
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
         doScrollDown('chat-block');
     }
+    // addGotOnFieldMessage(){
+    //     let colorClass = classColorName[this.currentPlayer.number];
+    //     let par = document.createElement("p");
+    //     let nameText = document.createElement("span");
+    //     nameText.setAttribute("class",colorClass);
+    //     let text = document.createTextNode(this.currentPlayer.name);
+    //     nameText.appendChild(text);
+    //     par.appendChild(nameText);
 
-    addSurrenderMessage(){
-        let colorClass = classColorName[this.currentPlayer.number];
-        let par = document.createElement("p");
-        let nameText = document.createElement("span");
-        nameText.setAttribute("class",colorClass);
-        let text = document.createTextNode(this.currentPlayer.name);
-        nameText.appendChild(text);
-        par.appendChild(nameText);
-        // let fieldNum = this.currentPlayer.currentFieldNum;
+    //     let fieldNum = this.currentPlayer.currentFieldNum;
+    //     let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
         
-        let msgText = " сдаётся";
-        text = document.createTextNode(msgText);
-  
-        par.appendChild(text);
-        document.getElementById('chat-block').appendChild(par);
-        doScrollDown('chat-block');
-    }
+    //     text = document.createTextNode(msgText);
+    //     par.appendChild(text);
+    //     document.getElementById('chat-block').appendChild(par);
+    //     doScrollDown('chat-block');
+    // }
 
-    addBuyingFieldMessage(money){
-        let colorClass = classColorName[this.currentPlayer.number];
-        let par = document.createElement("p");
-        let nameText = document.createElement("span");
-        nameText.setAttribute("class",colorClass);
-        let text = document.createTextNode(this.currentPlayer.name);
-        nameText.appendChild(text);
-        par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentFieldNum;
+    // addSurrenderMessage(){
+    //     let colorClass = classColorName[this.currentPlayer.number];
+    //     let par = document.createElement("p");
+    //     let nameText = document.createElement("span");
+    //     nameText.setAttribute("class",colorClass);
+    //     let text = document.createTextNode(this.currentPlayer.name);
+    //     nameText.appendChild(text);
+    //     par.appendChild(nameText);
         
-        let msgText = " покупает " + fieldNames[fieldNum-1] + " за " + money + "k";
-        text = document.createTextNode(msgText);
-  
-        par.appendChild(text);
-        document.getElementById('chat-block').appendChild(par);
-        doScrollDown('chat-block');
-    }
+    //     let msgText = " сдаётся";
+        
+    //     text = document.createTextNode(msgText);
+    //     par.appendChild(text);
+    //     document.getElementById('chat-block').appendChild(par);
+    //     doScrollDown('chat-block');
+    // }
 
-    addMoneyLapMessage(){
-        let colorClass = classColorName[this.currentPlayer.number];
-        let par = document.createElement("p");
-        let nameText = document.createElement("span");
-        nameText.setAttribute("class",colorClass);
-        let text = document.createTextNode(this.currentPlayer.name);
-        nameText.appendChild(text);
-        par.appendChild(nameText);
-        let money = 2000;
-        let msgText = " проходит очередной круг и получает " + money + "k";
-        text = document.createTextNode(msgText);
-  
-        par.appendChild(text);
-        document.getElementById('chat-block').appendChild(par);
-        doScrollDown('chat-block');
-    }
+    // addBuyingFieldMessage(){
+    //     let colorClass = classColorName[this.currentPlayer.number];
+    //     let par = document.createElement("p");
+    //     let nameText = document.createElement("span");
+    //     nameText.setAttribute("class",colorClass);
+    //     let text = document.createTextNode(this.currentPlayer.name);
+    //     nameText.appendChild(text);
+    //     par.appendChild(nameText);
+
+    //     let fieldNum = this.currentPlayer.currentFieldNum;
+    //     let money = this.currentPlayer.currentFieldObj.cost;
+    //     let msgText = " покупает " + fieldNames[fieldNum-1] + " за " + money + "k";
+        
+    //     text = document.createTextNode(msgText);
+    //     par.appendChild(text);
+    //     document.getElementById('chat-block').appendChild(par);
+    //     doScrollDown('chat-block');
+    // }
+
+    // addMoneyLapMessage(){
+    //     let colorClass = classColorName[this.currentPlayer.number];
+    //     let par = document.createElement("p");
+    //     let nameText = document.createElement("span");
+    //     nameText.setAttribute("class",colorClass);
+    //     let text = document.createTextNode(this.currentPlayer.name);
+    //     nameText.appendChild(text);
+    //     par.appendChild(nameText);
+
+    //     let money = 2000;
+    //     let msgText = " проходит очередной круг и получает " + money + "k";
+
+    //     text = document.createTextNode(msgText);
+    //     par.appendChild(text);
+    //     document.getElementById('chat-block').appendChild(par);
+    //     doScrollDown('chat-block');
+    // }
 
     addMoneyLap(){
         this.currentPlayer.money += 2000;
-        this.addMoneyLapMessage();
+        this.addMessage("moneyLap");
     }
 
     startMovingTimer(curPlayerNumber){
