@@ -90,7 +90,6 @@ function addBgToPurchasedField(playerBuyer,fieldNumber){
     let playerNum = playerBuyer.number;
     let bgColorClass = classBackgroundName[playerNum];
     let fieldBlockId = "play-cell-"+(fieldNumber);
-    console.log(fieldBlockId);
     let fieldBlock = document.getElementById(fieldBlockId);
     fieldBlock.classList.add(bgColorClass);
 }
@@ -403,6 +402,19 @@ function getMonopolyNumber(fieldNum){
     else return 8; //мона электроники
 }
 
+function getSpecialFieldType(fieldNum){
+    let fl = parseInt(fieldNum);
+    if (fl == 1 || fl == 11 || fl == 21 || fl == 31){
+        return null; //угловое поле
+    }
+    if (fl == 3 || fl == 8 || fl == 18 || fl == 23 || fl == 34 || fl == 39){
+        return null; //поле "?"
+    }
+    if (fl == 5 || fl == 37) {
+        return null; //налоговые поля
+    }
+}
+
 function isLastField(fieldNum){
     let fl = fieldNum;
     if(fl==4 || fl == 10 || fl == 15|| fl == 20 || 
@@ -477,6 +489,66 @@ class Field {
     }
 }
 
+class SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class StartField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class IncomeField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class RandomActivityField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class JailVisitingField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class JackpotField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+class JailField extends SpecialField{
+    constructor(name,fieldNum,game){
+        this.name = name;
+        this.fieldNum = fieldNum;
+        this.game = game;
+    }
+}
+
+
+
+
+
 class ImprovableField extends Field{
     constructor(name,cost,fieldNum,monopolyNum,rentList){
         super(name,cost,fieldNum,monopolyNum);
@@ -519,8 +591,7 @@ class Player{
       
       this.purchasedFields = [];
       this.game = null;
-      
-    //   let src = "images/" + String(this.color) + ".png";
+
       let id = String(this.id);
       createPlayer(id,number);
     }
@@ -534,17 +605,14 @@ class Player{
         this.game.pressedModalButton = true;
         let fieldCost = this.currentFieldObj.cost;
         if (this.money > fieldCost){
-            // console.log("денег хватило, купили");
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
             this.game.addBuyingFieldMessage(fieldCost);
-            // console.log(this.purchasedFields);
+            
         }
-        else {
-            // console.log("денег не хватило, не купили");
-        }
+
         buyFieldModal.close();
     }
 
@@ -574,13 +642,13 @@ class Game {
         this.playersQueue = []; //очередь игроков  
         //таймер хода
         this.startMovingTime;
-        this.maxMovingTime=10; //максимальное время хода
+        this.maxMovingTime=60; //максимальное время хода
         this.Time=0; //время старта таймера ожидания хода
         this.remainingMovingTime = this.maxMovingTime; //оставшееся время таймера хода
         this.movingTimerId; //таймер времени ожидания хода
         //таймер покупки
         this.startBuyFieldTime;
-        this.maxPurchaseTime = 5; //максимальное вреия покупки поля
+        this.maxPurchaseTime = 30; //максимальное вреия покупки поля
         this.purchaseTimerId; //таймер времени ожидания покупки для setTimeout (для ожидания)
         this.purchaseTimerId2; //таймер времени ожидания покупки для setInterval (для отображения)
         this.outerResolve; //хранение функции для промиса у таймера покупки
@@ -678,8 +746,7 @@ class Game {
         let text = document.createTextNode(this.currentPlayer.name);
         nameText.appendChild(text);
         par.appendChild(nameText);
-        let fieldNum = this.currentPlayer.currentFieldNum;
-        
+
         let msgText = " выбрасывает "+String(num1)+":"+String(num2);
         text = document.createTextNode(msgText);
   
@@ -743,6 +810,28 @@ class Game {
         doScrollDown('chat-block');
     }
 
+    addMoneyLapMessage(){
+        let colorClass = classColorName[this.currentPlayer.number];
+        let par = document.createElement("p");
+        let nameText = document.createElement("span");
+        nameText.setAttribute("class",colorClass);
+        let text = document.createTextNode(this.currentPlayer.name);
+        nameText.appendChild(text);
+        par.appendChild(nameText);
+        let money = 2000;
+        let msgText = " проходит очередной круг и получает " + money + "k";
+        text = document.createTextNode(msgText);
+  
+        par.appendChild(text);
+        document.getElementById('chat-block').appendChild(par);
+        doScrollDown('chat-block');
+    }
+
+    addMoneyLap(){
+        this.currentPlayer.money += 2000;
+        this.addMoneyLapMessage();
+    }
+
     startMovingTimer(curPlayerNumber){
         let timerSpan = document.getElementById("timer-text"+curPlayerNumber);
         timerSpan.textContent = this.maxMovingTime;
@@ -775,8 +864,13 @@ class Game {
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
+        let prevLap = this.currentPlayer.currentLap;
         this.currentPlayer.currentLap = Math.floor(this.currentPlayer.fieldsPassedNumber/40);
-        
+        if(prevLap<this.currentPlayer.currentLap) {
+            console.log("prev="+prevLap);
+            console.log("new="+this.currentPlayer.currentLap);
+            this.addMoneyLap();
+        }
         //изменение параметров фишки (анимация)
         let player = document.querySelector('.'+playersIds[playerNumber]);
         let curLen = getComputedStyle(player).getPropertyValue('--distance'+(playerNumber+1));
@@ -840,7 +934,7 @@ function createGame(playerNum,playerData){
 }
 
 function startGame(){
-    let playerNum = 5;
+    let playerNum = 2;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     createFields();
     // console.table(fields);
