@@ -456,7 +456,7 @@ function setScalablePath(playerNum){
     
 };
 
-class Field {
+class PurchasedField {
     constructor(name,cost,fieldNum,monopolyNum){
         this.fieldName = name;
         
@@ -544,7 +544,7 @@ class JailField extends SpecialField{
 
 
 
-class ImprovableField extends Field{
+class ImprovableField extends PurchasedField{
     constructor(name,cost,fieldNum,monopolyNum,rentList){
         super(name,cost,fieldNum,monopolyNum);
         this.rentList = rentList;
@@ -553,7 +553,7 @@ class ImprovableField extends Field{
     }
 }
 
-class GameDevsField extends Field{
+class GameDevsField extends PurchasedField{
     constructor(name,cost,fieldNum,monopolyNum){
         super(name,cost,fieldNum,monopolyNum);
         this.multiplierRentList = normalMonopolyRentList[9];
@@ -561,7 +561,7 @@ class GameDevsField extends Field{
     }
 }
 
-class CarField extends Field{
+class CarField extends PurchasedField{
     constructor(name,cost,fieldNum,monopolyNum){
         super(name,cost,fieldNum,monopolyNum);
         this.rentList = normalMonopolyRentList[0];
@@ -599,7 +599,7 @@ class Player{
         this.game.outerResolve();
         this.game.pressedModalButton = true;
         let fieldCost = this.currentFieldObj.cost;
-        if (this.money > fieldCost){
+        if (this.money >= fieldCost){
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
@@ -669,7 +669,7 @@ class Game {
    
         this.addMessage("rollDice",randomNum1,randomNum2);
         let curField = fields[this.currentPlayer.currentFieldNum-1]
-        if(curField && !curField.owner){
+        if((curField instanceof PurchasedField) && !curField.owner){
             this.addMessage("gotOnField");
             let fieldCost = this.currentPlayer.currentFieldObj.cost;
             let newBtnText = "Кубить за " + fieldCost + "k";
