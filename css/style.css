@@ -422,7 +422,7 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     top: 0%;
     left: 0%;
     
-    transition: 0.3s ease-in-out;
+    transition: 0.6s ease-in-out;
 
     offset-path: path(var(--path1));
 }

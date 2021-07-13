@@ -41,6 +41,9 @@ const percentSingleField = 2.27272727;
 const percentSingleAndHalfField = 3.40919091;
 
 const startBonus = 1000;
+const waitingTimeGoJail = 1500; //должно быть меньше, чем время анимации движения фишки (оно входит в waitingTimeGoJail)
+const luxeryTax = 1000;
+const incomeTax = 2000;
 
 let rollDiceButtonId = "modal-btn-roll-dice";
 let buyFieldButtonId = "modal-btn-buy-field";
@@ -193,7 +196,7 @@ function changeModalBtnText(buttonId,newText){
     btnSpan.textContent = newText;
 }
 
-function createFields(){
+function createFields(game){
     for(let i=0;i<40;i++){
         let fieldNum = i+1;
         let monopolyNum = getMonopolyNumber(fieldNum);
@@ -216,8 +219,13 @@ function createFields(){
                 fields[i] = new ImprovableField(name,cost,fieldNum,monopolyNum,rentList);
             }
         }
-        else fields[i] = null; //спец поле  
+        //спец поля
+        else {
+            let fieldType = getSpecialFieldType(fieldNum);
+            fields[i] = new fieldType(name,fieldNum,game);
+        }
     }
+    console.table(fields)
 }
 
 class ModalWindow{
@@ -406,14 +414,23 @@ function getMonopolyNumber(fieldNum){
 
 function getSpecialFieldType(fieldNum){
     let fl = parseInt(fieldNum);
-    if (fl == 1 || fl == 11 || fl == 21 || fl == 31){
-        return null; //угловое поле
+    if (fl == 1){
+        return StartField; //угловое поле (Start)
+    }
+    if (fl == 11){
+        return JailVisitingField; //угловое поле (Jail visiting)
+    }
+    if (fl == 21){
+        return JackpotField; //угловое поле (Jackpot)
+    }
+    if (fl == 31){
+        return GoToJailField; //угловое поле (Jail)
     }
     if (fl == 3 || fl == 8 || fl == 18 || fl == 23 || fl == 34 || fl == 39){
-        return null; //поле "?"
+        return RandomActivityField; //поле "?"
     }
     if (fl == 5 || fl == 37) {
-        return null; //налоговые поля
+        return IncomeField; //налоговые поля
     }
 }
 
@@ -506,13 +523,15 @@ class StartField extends SpecialField{
     }
     addStartBonus(){
         game.currentPlayer.money += this.startBonus;
-        game,addMessage("startFieldBonus");
+        game.addMessage("startFieldBonus");
     }
 }
 
 class IncomeField extends SpecialField{
     constructor(name,fieldNum,game){
         super(name,fieldNum,game);
+        this.luxeryTax = luxeryTax;
+        this.incomeTax = IncomeTax;
     }
 }
 
@@ -534,9 +553,14 @@ class JackpotField extends SpecialField{
     }
 }
 
-class JailField extends SpecialField{
+class GoToJailField extends SpecialField{
     constructor(name,fieldNum,game){
         super(name,fieldNum,game);
+    }
+    goToJail(){
+        game.movePlayer(-20); // возврат до поля тюрьмы
+        game.addMessage("goToJail");
+        
     }
 }
 
@@ -665,10 +689,12 @@ class Game {
         let randomNum1 = randomInteger(1, 6);
         let randomNum2 = randomInteger(1, 6);
         let randomSum = randomNum1 + randomNum2;
+        this.addMessage("rollDice",randomNum1,randomNum2);
         this.movePlayer(randomSum);
    
-        this.addMessage("rollDice",randomNum1,randomNum2);
+        
         let curField = fields[this.currentPlayer.currentFieldNum-1]
+        //прокачиваемое и не купленное поле
         if((curField instanceof PurchasedField) && !curField.owner){
             this.addMessage("gotOnField");
             let fieldCost = this.currentPlayer.currentFieldObj.cost;
@@ -687,6 +713,20 @@ class Game {
                 wasRemovedPlayer = true;
             }   
         }
+        //поле старт
+        else if (curField instanceof StartField){
+            this.currentPlayer.currentFieldObj.addStartBonus();
+        }
+        //поле полиция отправляет в тюрьму
+        else if (curField instanceof GoToJailField){
+            await sleep(this,waitingTimeGoJail);
+            this.currentPlayer.currentFieldObj.goToJail();
+        }
+        //поле посещение тюрьмы
+        else if (curField instanceof JailVisitingField){
+            this.addMessage("jailVisiting")
+        }
+        //поле 
         if (!wasRemovedPlayer){
             this.playersQueue.shift();
             this.playersQueue.push(this.currentPlayer);
@@ -758,7 +798,9 @@ class Game {
         "surrender" - игрок сдается/проигрывает
         "buyingField" - покупка поля
         "moneyLap" - добавление денег за проход очереднего круга
-        "" - 
+        "startFieldBonus" - добавление денег за остановку на старте
+        "goToJail" - отправление в тюрьму
+        "jailVisiting" - посещение тюрьмы
         
         */
         let colorClass = classColorName[this.currentPlayer.number];
@@ -789,7 +831,13 @@ class Game {
             msgText = " проходит очередной круг и получает " + moneyForLap + "k";
             break;  
         case "startFieldBonus":
-            msgText = " проходит очередной круг и получает " + startBonus + "k";
+            msgText = " останавливается на поле \"Старт\" и получает бонус в размере " + startBonus + "k";
+            break;
+        case "goToJail":
+            msgText = " арестован полицией и отправляется в тюрьму";
+            break;
+        case "jailVisiting":
+            msgText = " посещает полицейский участок с экскурсией";
             break;
         }
         text = document.createTextNode(msgText);
@@ -903,14 +951,16 @@ class Game {
     }
 
     movePlayer(randomSum){
+        // if(this.currentPlayer.currentFieldNum == 1) {
+        //     randomSum=10;
+        //     console.log("ход со старта!")
+        // }
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
         let prevLap = this.currentPlayer.currentLap;
         this.currentPlayer.currentLap = Math.floor(this.currentPlayer.fieldsPassedNumber/40);
         if(prevLap<this.currentPlayer.currentLap) {
-            console.log("prev="+prevLap);
-            console.log("new="+this.currentPlayer.currentLap);
             this.addMoneyLap();
         }
         //изменение параметров фишки (анимация)
@@ -976,12 +1026,12 @@ function createGame(playerNum,playerData){
 }
 
 function startGame(){
-    let playerNum = 2;
+    let playerNum = 5;
     let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
-    createFields();
-    // console.table(fields);
-    createGame(playerNum, playerData);
     
+    console.table(fields);
+    createGame(playerNum, playerData);
+    createFields(game);
     addPlayersBlock(playerNum,game.playerList);
 
     createModals(game);
@@ -989,6 +1039,7 @@ function startGame(){
     setFieldParams();
     rollDiceModal.open();
     game.startMovingTimer(0);
+    
 }
 
 
