@@ -45,9 +45,10 @@ const waitingTimeGoJail = 1500; //должно быть меньше, чем в�
 const luxeryTax = 1000;
 const incomeTax = 2000;
 
-let rollDiceButtonId = "modal-btn-roll-dice";
-let buyFieldButtonId = "modal-btn-buy-field";
-let putUpAuctionButtonId = "modal-btn-auction";
+const rollDiceButtonId = "modal-btn-roll-dice";
+const buyFieldButtonId = "modal-btn-buy-field";
+const putUpAuctionButtonId = "modal-btn-auction";
+const payTaxButtonId = "modal-btn-pay-tax";
 
 
 let game;
@@ -225,7 +226,7 @@ function createFields(game){
             fields[i] = new fieldType(name,fieldNum,game);
         }
     }
-    console.table(fields)
+    // console.table(fields)
 }
 
 class ModalWindow{
@@ -240,6 +241,7 @@ class ModalWindow{
     */
     constructor(modalType,game){
         let isOneButton = true;
+        let sum;
         this.modalType = modalType;
         this.game = game;
         this.btnText2 = null;
@@ -261,19 +263,24 @@ class ModalWindow{
                 this.modalName = "buy-field-modal";
                 this.headerText = "Покупаем?";
                 this.bodyText = "Попадая на чужие поля, вы должны выплачивать арнеду его владельцу.";
-                let sum = 100; //TODO
+                sum = 100; //
                 this.btnText1 = "Купить за " + sum + "k";
                 this.btnText2 = "На аукцион.";
                 this.btnId1 = buyFieldButtonId;
                 this.btnId2 = putUpAuctionButtonId;
                 this.btnFuncName1 = "game.currentPlayer.buyField()"
-                this.btnFuncName2 = "game.currentPlayer.putUpAuctionField()"
                 isOneButton = false;
                 break;
             //TODO
             case 'payPlayerRent':
                 break;
-            case 'payBankRent':
+            case 'payTax':
+                this.modalName = "pay-tax-modal";
+                this.headerText = "Заплатите Банку";
+                this.bodyText = "Иногда приходится выплачивать налог банку.";
+                this.btnText1 = "Заплатить " + incomeTax + "k";
+                this.btnId1 = payTaxButtonId;
+                this.btnFuncName1 = "game.currentPlayer.payTax()"
                 break;
             case 'auction':
                 break;
@@ -325,7 +332,7 @@ class ModalWindow{
     }
     open(){
         document.getElementById(this.modalName).classList.add("open");
-        if(this.modalType == "buyField")
+        if(this.modalType == "buyField" || this.modalType == "payTax")
             this.game.startBuyFieldTimer(this.game.currentPlayer.number);
 
     }
@@ -341,6 +348,7 @@ class ModalWindow{
 function createModals(game){
     rollDiceModal = new ModalWindow("rollDice",game);
     buyFieldModal = new ModalWindow("buyField",game);
+    payTaxModal = new ModalWindow("payTax",game);
 }
 
 
@@ -430,7 +438,7 @@ function getSpecialFieldType(fieldNum){
         return RandomActivityField; //поле "?"
     }
     if (fl == 5 || fl == 37) {
-        return IncomeField; //налоговые поля
+        return TaxField; //налоговые поля
     }
 }
 
@@ -527,12 +535,13 @@ class StartField extends SpecialField{
     }
 }
 
-class IncomeField extends SpecialField{
+class TaxField extends SpecialField{
     constructor(name,fieldNum,game){
         super(name,fieldNum,game);
         this.luxeryTax = luxeryTax;
-        this.incomeTax = IncomeTax;
+        this.incomeTax = incomeTax;
     }
+
 }
 
 class RandomActivityField extends SpecialField{
@@ -620,10 +629,10 @@ class Player{
 
 
     buyField(){
-        this.game.outerResolve();
-        this.game.pressedModalButton = true;
         let fieldCost = this.currentFieldObj.cost;
         if (this.money >= fieldCost){
+            this.game.outerResolve();
+            this.game.pressedModalButton = true;
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
@@ -631,8 +640,35 @@ class Player{
             this.game.addMessage("buyingField");
             
         }
+        else{
+            alert("Вам не хватило денег на покупку!")
+        }
 
         buyFieldModal.close();
+    }
+
+    payTax(){
+        let tax;
+        if (this.currentFieldNum == 5) {
+            tax=2000;
+        }
+        else {
+            tax = 1000;
+        }
+        
+        if (this.money >= tax){
+            this.game.outerResolve();
+            this.game.pressedModalButton = true;
+            this.money -= tax;
+            this.game.outerResolve();
+            this.game.pressedModalButton = true;
+            this.game.addMessage("paidExpenses");
+            payTaxModal.close();
+            }
+        else
+        {
+            alert("Недостаточно денег!")
+        }
     }
 
     putUpAuctionField(){
@@ -680,6 +716,8 @@ class Game {
       }
       
     async rollTheDice(){
+        let tax;
+        let newBtnText;
         let wasRemovedPlayer = false;
         rollDiceModal.close();
 
@@ -698,7 +736,7 @@ class Game {
         if((curField instanceof PurchasedField) && !curField.owner){
             this.addMessage("gotOnField");
             let fieldCost = this.currentPlayer.currentFieldObj.cost;
-            let newBtnText = "Кубить за " + fieldCost + "k";
+            newBtnText = "Купить за " + fieldCost + "k";
             changeModalBtnText(buyFieldButtonId,newBtnText);
             buyFieldModal.open();
             
@@ -725,6 +763,30 @@ class Game {
         //поле посещение тюрьмы
         else if (curField instanceof JailVisitingField){
             this.addMessage("jailVisiting")
+        }
+        //поле выплаты налога
+        else if (curField instanceof TaxField){
+            
+            if (curField.fieldNum == 5) {
+                tax = incomeTax;
+                this.addMessage("payIncomeTax");
+            }
+            else {
+                tax = luxeryTax;
+                this.addMessage("payLuxeryTax");
+            }  
+            newBtnText = "Заплатить " + tax + "k";
+            changeModalBtnText(payTaxButtonId,newBtnText);
+            payTaxModal.open();
+            await sleep(this,this.maxPurchaseTime*1000);
+            if(this.pressedModalButton){
+                this.pressedModalButton = false;
+            }
+            else {
+                this.playerLose();
+                payTaxModal.close();
+                wasRemovedPlayer = true;
+            } 
         }
         //поле 
         if (!wasRemovedPlayer){
@@ -801,6 +863,9 @@ class Game {
         "startFieldBonus" - добавление денег за остановку на старте
         "goToJail" - отправление в тюрьму
         "jailVisiting" - посещение тюрьмы
+        "payIncomeTax" - обязанность заплатить подоходный налог
+        "payLuxeryTax" - обязанность заплатить налог на роскошь
+        "paidExpenses" - оплата расходов (подоходного или на роскошь)
         
         */
         let colorClass = classColorName[this.currentPlayer.number];
@@ -838,6 +903,15 @@ class Game {
             break;
         case "jailVisiting":
             msgText = " посещает полицейский участок с экскурсией";
+            break;
+        case "payIncomeTax":
+            msgText = " попадает на поле \"Подоходный налог\" и должен заплатить Банку " + incomeTax + "k";
+            break;
+        case "payLuxeryTax":
+            msgText = " попадает на поле \"Налог на роскошь\" и должен заплатить Банку " + luxeryTax + "k";
+            break;
+        case "paidExpenses":
+            msgText = " оплачивает расходы";
             break;
         }
         text = document.createTextNode(msgText);
@@ -951,10 +1025,9 @@ class Game {
     }
 
     movePlayer(randomSum){
-        // if(this.currentPlayer.currentFieldNum == 1) {
-        //     randomSum=10;
-        //     console.log("ход со старта!")
-        // }
+        if(this.currentPlayer.currentFieldNum == 1) {
+            randomSum=4;
+        }
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
@@ -1027,7 +1100,7 @@ function createGame(playerNum,playerData){
 
 function startGame(){
     let playerNum = 5;
-    let playerData = [["Victor",15000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
+    let playerData = [["Victor",1000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     
     console.table(fields);
     createGame(playerNum, playerData);
