@@ -238,6 +238,7 @@ class ModalWindow{
     2 - "payPlayerRent" - заплатить аренду (h-"Заплатите аренду.",b-"Попадая на чужие поля, вы должны выплачивать арнеду его владельцу",f-1:"заплатить 100к")
     3 - "payBankRent" - заплатить банку (h-"Заплатите банку.",b-"Вы можете получить деньги, продав филиалы или заложив фирму - для этого кликните на неё.",f-1:"заплатить 100к")
     4 - "auction" - аукцион (h-"На аукционе fieldName!",b-"Вы можете либо поднять ставку на 100к, либо покинуть аукцион.",f-1:"Поднять до 3100к", 2:"отказаться")
+    5 - "infoImproveDeposit" - специальное окно (его место зависит от поля, для которого оно вызывается, данные этого поля нужно динамически заполнять перед показом окна)
     */
     constructor(modalType,game){
         let isOneButton = true;
@@ -258,11 +259,12 @@ class ModalWindow{
                 this.btnText1 = "Бросить кубики";
                 this.btnId1 = rollDiceButtonId;
                 this.btnFuncName1 = "game.rollTheDice()"
+                this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
             case 'buyField':
                 this.modalName = "buy-field-modal";
                 this.headerText = "Покупаем?";
-                this.bodyText = "Попадая на чужие поля, вы должны выплачивать арнеду его владельцу.";
+                this.bodyText = "Попадая на чужие поля, вы должны выплачивать аренду его владельцу.";
                 sum = 100; //
                 this.btnText1 = "Купить за " + sum + "k";
                 this.btnText2 = "На аукцион.";
@@ -271,9 +273,11 @@ class ModalWindow{
                 this.btnFuncName1 = "game.currentPlayer.buyField()";
                 this.btnFuncName2 = "game.currentPlayer.putUpAuctionField()";
                 isOneButton = false;
+                this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
             //TODO
             case 'payPlayerRent':
+                this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
             case 'payTax':
                 this.modalName = "pay-tax-modal";
@@ -281,14 +285,19 @@ class ModalWindow{
                 this.bodyText = "Иногда приходится выплачивать налог банку.";
                 this.btnText1 = "Заплатить " + incomeTax + "k";
                 this.btnId1 = payTaxButtonId;
-                this.btnFuncName1 = "game.currentPlayer.payTax()"
+                this.btnFuncName1 = "game.currentPlayer.payTax()";
+                this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
             case 'auction':
+                this.modalElement = this.createModalWindowElem(isOneButton);
+                break;
+            case 'auction':
+                this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
             default:
                 break;
           }
-        this.modalElement = this.createModalWindowElem(isOneButton);
+        
     }
     createModalWindowElem(isOneButton){
         const modal = document.createElement('div');
@@ -436,7 +445,7 @@ function getSpecialFieldType(fieldNum){
         return GoToJailField; //угловое поле (Jail)
     }
     if (fl == 3 || fl == 8 || fl == 18 || fl == 23 || fl == 34 || fl == 39){
-        return RandomActivityField; //поле "?"
+        return ChanceField; //поле "?"
     }
     if (fl == 5 || fl == 37) {
         return TaxField; //налоговые поля
@@ -545,7 +554,7 @@ class TaxField extends SpecialField{
 
 }
 
-class RandomActivityField extends SpecialField{
+class ChanceField extends SpecialField{
     constructor(name,fieldNum,game){
         super(name,fieldNum,game);
     }
@@ -789,6 +798,15 @@ class Game {
                 wasRemovedPlayer = true;
             } 
         }
+        //поле казино
+        else if (curField instanceof JackpotField){
+            this.addMessage("gotOnJackpot");
+        }
+        //поле казино
+        else if (curField instanceof ChanceField){
+            this.addMessage("gotOnChance");
+        }
+        
         //поле 
         if (!wasRemovedPlayer){
             this.playersQueue.shift();
@@ -851,6 +869,8 @@ class Game {
         "payLuxeryTax" - обязанность заплатить налог на роскошь
         "paidExpenses" - оплата расходов (подоходного или на роскошь)
         "putUpAuction" - высталение на аукцион
+        "gotOnJackpot" - попадание на поле казино
+        "gotOnChance" - попадание на поле шанс
         
         */
         let colorClass = classColorName[this.currentPlayer.number];
@@ -902,7 +922,14 @@ class Game {
             let fieldName = this.currentPlayer.currentFieldObj.fieldName;
             msgText = " выставляет " + fieldName + " на аукцион.";
             break;
+        case "gotOnJackpot":
+            msgText = " попадает на поле \"Казино\"";
+            break;
+        case "gotOnChance":
+            msgText = " попадает на поле \"Шанс\"";
+            break;
         }
+        
         text = document.createTextNode(msgText);
         par.appendChild(text);
         document.getElementById('chat-block').appendChild(par);
