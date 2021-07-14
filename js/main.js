@@ -268,7 +268,8 @@ class ModalWindow{
                 this.btnText2 = "На аукцион.";
                 this.btnId1 = buyFieldButtonId;
                 this.btnId2 = putUpAuctionButtonId;
-                this.btnFuncName1 = "game.currentPlayer.buyField()"
+                this.btnFuncName1 = "game.currentPlayer.buyField()";
+                this.btnFuncName2 = "game.currentPlayer.putUpAuctionField()";
                 isOneButton = false;
                 break;
             //TODO
@@ -638,13 +639,13 @@ class Player{
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
             this.game.addMessage("buyingField");
-            
+            buyFieldModal.close();
         }
         else{
             alert("Вам не хватило денег на покупку!")
         }
 
-        buyFieldModal.close();
+        
     }
 
     payTax(){
@@ -674,7 +675,7 @@ class Player{
     putUpAuctionField(){
         this.game.outerResolve();
         this.game.pressedModalButton = true;
-        clearTimeout(this.game.purchaseTimerId);
+        this.game.addMessage("putUpAuction");
         buyFieldModal.close();
     }
   
@@ -866,6 +867,7 @@ class Game {
         "payIncomeTax" - обязанность заплатить подоходный налог
         "payLuxeryTax" - обязанность заплатить налог на роскошь
         "paidExpenses" - оплата расходов (подоходного или на роскошь)
+        "putUpAuction" - высталение на аукцион
         
         */
         let colorClass = classColorName[this.currentPlayer.number];
@@ -912,6 +914,10 @@ class Game {
             break;
         case "paidExpenses":
             msgText = " оплачивает расходы";
+            break;
+        case "putUpAuction":
+            let fieldName = this.currentPlayer.currentFieldObj.fieldName;
+            msgText = " выставляет " + fieldName + " на аукцион.";
             break;
         }
         text = document.createTextNode(msgText);
@@ -1025,9 +1031,9 @@ class Game {
     }
 
     movePlayer(randomSum){
-        if(this.currentPlayer.currentFieldNum == 1) {
-            randomSum=4;
-        }
+        // if(this.currentPlayer.currentFieldNum == 1) {
+        //     randomSum=4;
+        // }
         let playerNumber = this.currentPlayer.number;
 
         this.currentPlayer.fieldsPassedNumber += randomSum;
@@ -1102,7 +1108,6 @@ function startGame(){
     let playerNum = 5;
     let playerData = [["Victor",1000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
     
-    console.table(fields);
     createGame(playerNum, playerData);
     createFields(game);
     addPlayersBlock(playerNum,game.playerList);
