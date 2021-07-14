@@ -836,23 +836,6 @@ class Game {
         alert(winnerName + " Победил!");
     }
 
-    // addRollDiceMessage(num1,num2){
-    //     let colorClass = classColorName[this.currentPlayer.number];
-    //     let par = document.createElement("p");
-    //     let nameText = document.createElement("span");
-    //     nameText.setAttribute("class",colorClass);
-    //     let text = document.createTextNode(this.currentPlayer.name);
-    //     nameText.appendChild(text);
-    //     par.appendChild(nameText);
-
-    //     let msgText = " выбрасывает "+String(num1)+":"+String(num2);
-    //     text = document.createTextNode(msgText);
-  
-    //     par.appendChild(text);
-    //     document.getElementById('chat-block').appendChild(par);
-    //     doScrollDown('chat-block');
-        
-    // }
     addMessage(msgType,num1=undefined,num2=undefined){
         /*
         msgType: 
@@ -925,77 +908,6 @@ class Game {
         document.getElementById('chat-block').appendChild(par);
         doScrollDown('chat-block');
     }
-    // addGotOnFieldMessage(){
-    //     let colorClass = classColorName[this.currentPlayer.number];
-    //     let par = document.createElement("p");
-    //     let nameText = document.createElement("span");
-    //     nameText.setAttribute("class",colorClass);
-    //     let text = document.createTextNode(this.currentPlayer.name);
-    //     nameText.appendChild(text);
-    //     par.appendChild(nameText);
-
-    //     let fieldNum = this.currentPlayer.currentFieldNum;
-    //     let msgText = " попадает на поле " + fieldNames[fieldNum-1] + " и задумывается о покупке";
-        
-    //     text = document.createTextNode(msgText);
-    //     par.appendChild(text);
-    //     document.getElementById('chat-block').appendChild(par);
-    //     doScrollDown('chat-block');
-    // }
-
-    // addSurrenderMessage(){
-    //     let colorClass = classColorName[this.currentPlayer.number];
-    //     let par = document.createElement("p");
-    //     let nameText = document.createElement("span");
-    //     nameText.setAttribute("class",colorClass);
-    //     let text = document.createTextNode(this.currentPlayer.name);
-    //     nameText.appendChild(text);
-    //     par.appendChild(nameText);
-        
-    //     let msgText = " сдаётся";
-        
-    //     text = document.createTextNode(msgText);
-    //     par.appendChild(text);
-    //     document.getElementById('chat-block').appendChild(par);
-    //     doScrollDown('chat-block');
-    // }
-
-    // addBuyingFieldMessage(){
-    //     let colorClass = classColorName[this.currentPlayer.number];
-    //     let par = document.createElement("p");
-    //     let nameText = document.createElement("span");
-    //     nameText.setAttribute("class",colorClass);
-    //     let text = document.createTextNode(this.currentPlayer.name);
-    //     nameText.appendChild(text);
-    //     par.appendChild(nameText);
-
-    //     let fieldNum = this.currentPlayer.currentFieldNum;
-    //     let money = this.currentPlayer.currentFieldObj.cost;
-    //     let msgText = " покупает " + fieldNames[fieldNum-1] + " за " + money + "k";
-        
-    //     text = document.createTextNode(msgText);
-    //     par.appendChild(text);
-    //     document.getElementById('chat-block').appendChild(par);
-    //     doScrollDown('chat-block');
-    // }
-
-    // addMoneyLapMessage(){
-    //     let colorClass = classColorName[this.currentPlayer.number];
-    //     let par = document.createElement("p");
-    //     let nameText = document.createElement("span");
-    //     nameText.setAttribute("class",colorClass);
-    //     let text = document.createTextNode(this.currentPlayer.name);
-    //     nameText.appendChild(text);
-    //     par.appendChild(nameText);
-
-    //     let money = 2000;
-    //     let msgText = " проходит очередной круг и получает " + money + "k";
-
-    //     text = document.createTextNode(msgText);
-    //     par.appendChild(text);
-    //     document.getElementById('chat-block').appendChild(par);
-    //     doScrollDown('chat-block');
-    // }
 
     addMoneyLap(){
         this.currentPlayer.money += 2000;
