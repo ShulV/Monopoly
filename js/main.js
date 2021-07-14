@@ -4,7 +4,8 @@ const playersColors = ["red","green","blue","purple","yellow"];
 const playersIds = ["red-player", "green-player", "blue-player", "purple-player", "yellow-player"];
 const playerPropBlockIds = ["player-red-block","player-green-block","player-blue-block","player-purple-block","player-yellow-block",];
 const classColorName = ["red-text", "green-text", "blue-text", "purple-text", "yellow-text"];
-const classBackgroundName = ["red-bg", "green-bg", "blue-bg", "purple-bg", "yellow-bg"];
+const classBackgroundName = ["light-red-bg", "light-green-bg", "light-blue-bg", "light-purple-bg", "light-yellow-bg"];
+const classBackgroundNumberName = ["red-bg-","pink-bg-","orange-bg-","cyan-bg-","blue-bg-","green-bg-","light-blue-bg-","purple-bg-","grey-bg-","cherry-bg-"];
 const fieldNames = ["Start","Chanel","?","Hugo boss", "Tax income", "Audi","Adidas","?","Puma","Lacoste",
 "Jail","Vkontakte","Rockstar games","Facebook","Twitter","Mercedes","Coca-cola","?","Pepsi","Fanta",
 "Jackpot","American airlines","?","Lufthansa","British airways","Ford","McDonald's","BurgerKing","Rovio","KFC",
@@ -291,14 +292,38 @@ class ModalWindow{
             case 'auction':
                 this.modalElement = this.createModalWindowElem(isOneButton);
                 break;
-            case 'auction':
-                this.modalElement = this.createModalWindowElem(isOneButton);
+            case 'info':
+                createModalInfoElem();
                 break;
             default:
                 break;
           }
         
     }
+    createModalInfoElem(){
+        const modal = document.createElement('div');
+        modal.classList.add("modal-info-block");
+        modal.setAttribute('id',"modal-info-block");
+        modal.insertAdjacentHTML('afterbegin',`
+            
+//HTML
+            `);
+
+        document.getElementById("play-field").appendChild(modal);
+
+        if(isOneButton) this.deleteSecondButton();
+
+        document.getElementById(this.modalName).classList.add(this.modalName);
+        document.getElementById(this.headerId).classList.add("modal-header");
+        document.getElementById(this.bodyId).classList.add("modal-body");
+        document.getElementById(this.footerId).classList.add("modal-footer");
+        
+        let btn1 = document.getElementById(this.btnId1);
+        btn1.classList.add(this.btnId1);
+        btn1.classList.add("modal-btn");
+        return modal;
+    }
+    
     createModalWindowElem(isOneButton){
         const modal = document.createElement('div');
         modal.classList.add("modal-block");

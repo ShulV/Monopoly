@@ -476,25 +476,69 @@ const player_border_colors = ["#862a2a","#177842","#2475b3","#6c1c9e","#9fa127",
     color: #9fa127;
 }
 
-.red-bg {
+/* для полей */
+.light-red-bg {
     background-color:#ea8280;
 }
 
-.green-bg {
+.light-green-bg {
     background-color:#b8e58d;
 }
 
-.blue-bg {
+.light-blue-bg {
     background-color:#6ec5ef;
 }
 
-.purple-bg {
+.light-purple-bg {
     background-color: #bda1f0;
 }
 
-.yellow-bg {
+.light-yellow-bg {
     background-color: #f6fa00;
 }
+
+/* для фона чилсенной информации полей */
+
+.red-bg- {/* мона 0 */
+background-color: #d84552;
+}
+.pink-bg- {/* мона 1 */
+    background-color: #ec87c0;
+}
+
+.orange-bg- {/* мона 2 */
+    background-color: #dfb438;
+}
+
+.cyan-bg- {/* мона 3 */
+    background-color: #35bc9b;
+}
+
+.blue-bg- {/* мона 4 */
+    background-color: #4a89da;
+}
+
+.green-bg- {/* мона 5 */
+    background-color: #8bc151;
+}
+
+.light-blue-bg- {/* мона 6 */
+    background-color: #4ec1e8;
+}
+
+.purple-bg- {/* мона 7 */
+    background-color: #947bd9;
+}
+
+.grey-bg- {/* мона 8 */
+    background-color: #656d77;
+}
+
+.cherry-bg- {/* мона 9 */
+    background-color: #7e1f0e;
+}
+
+
 
 
 
