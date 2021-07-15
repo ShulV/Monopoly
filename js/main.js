@@ -42,9 +42,10 @@ const percentSingleField = 2.27272727;
 const percentSingleAndHalfField = 3.40919091;
 
 const startBonus = 1000;
-const waitingTimeGoJail = 1500; //должно быть меньше, чем время анимации движения фишки (оно входит в waitingTimeGoJail)
+const waitingTimeGoJail = 1500; //ms, должно быть меньше, чем время анимации движения фишки (оно входит в waitingTimeGoJail)
 const luxeryTax = 1000;
 const incomeTax = 2000;
+const botWaitingTime = 1000; //ms
 
 const rollDiceButtonId = "modal-btn-roll-dice";
 const buyFieldButtonId = "modal-btn-buy-field";
@@ -66,7 +67,9 @@ function addPlayersBlock(playerNumber, playerList){
         //name
         let nameSpan = document.createElement("span");
         nameSpan.setAttribute("class","name-text");
-        let nameText = document.createTextNode(playerList[i].name);
+        let playerName = playerList[i].name;
+        if (playerList[i].isBot) playerName += " (бот)"
+        let nameText = document.createTextNode(playerName);
         nameSpan.appendChild(nameText);
         div.appendChild(nameSpan);
         //money
@@ -404,10 +407,22 @@ function createPlayer(id,playerNumber){
     document.getElementById('play-field').appendChild(circle);
 }
 
-function randomInteger(min, max) {
+function getRandomInteger(min, max) {
     // случайное число от min до (max+1)
     let rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
+}
+
+function performRandomFunction(functions,playerContext){
+    
+    console.log(this);
+    let randonFuncNum = getRandomInteger(0,functions.length-1);
+    console.log("func num=" + randonFuncNum);
+    let funcPlayerContext = functions[randonFuncNum].bind(playerContext);
+    funcPlayerContext();
+    
+
+
 }
 
 function doScrollDown(scrollBlockName) {
@@ -608,10 +623,6 @@ class GoToJailField extends SpecialField{
     }
 }
 
-
-
-
-
 class ImprovableField extends PurchasedField{
     constructor(name,cost,fieldNum,monopolyNum,rentList){
         super(name,cost,fieldNum,monopolyNum);
@@ -639,7 +650,7 @@ class CarField extends PurchasedField{
 
 class Player{
 
-    constructor(name, money, number) {
+    constructor(name, money, number, isBot=false) {
       this.name = name;
       this.money = money;
       this.place = 0;
@@ -651,7 +662,7 @@ class Player{
       this.currentLap = 0;
       this.fieldsPassedNumber = 0;
       this.isLoser = false;
-      
+      this.isBot = isBot;
       this.purchasedFields = [];
       this.game = null;
 
@@ -664,19 +675,22 @@ class Player{
 
 
     buyField(){
+        let isBot = game.currentPlayer.isBot;
+        console.log("buyField this="+this)
         let fieldCost = this.currentFieldObj.cost;
         if (this.money >= fieldCost){
-            this.game.outerResolve();
+            if(isBot) this.game.outerResolve();
             this.game.pressedModalButton = true;
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
             this.game.addMessage("buyingField");
-            buyFieldModal.close();
+            if(isBot) buyFieldModal.close();
         }
         else{
-            alert("Вам не хватило денег на покупку!")
+            if(isBot) alert("Вам не хватило денег на покупку!");
+            else buyFieldModal.close();
         }
 
         
@@ -707,9 +721,12 @@ class Player{
     }
 
     putUpAuctionField(){
+        console.log(this)
+        // if(this.isBot) 
         this.game.outerResolve();
         this.game.pressedModalButton = true;
         this.game.addMessage("putUpAuction");
+        // if(this.isBot)
         buyFieldModal.close();
     }
   
@@ -759,8 +776,8 @@ class Game {
         clearInterval(this.movingTimerId);
         clearInterval(this.purchaseTimerId2);
         //получение двух случайных чисел
-        let randomNum1 = randomInteger(1, 6);
-        let randomNum2 = randomInteger(1, 6);
+        let randomNum1 = getRandomInteger(1, 6);
+        let randomNum2 = getRandomInteger(1, 6);
         let randomSum = randomNum1 + randomNum2;
         this.addMessage("rollDice",randomNum1,randomNum2);
         this.movePlayer(randomSum);
@@ -842,9 +859,120 @@ class Game {
             wasRemovedPlayer = false; //возврат состояния флага
         }
         let curPlayerNumber = this.playersQueue[0].number;
-        this.startMovingTimer(curPlayerNumber);
+
+        if (this.currentPlayer.isBot){
+            this.rollTheDiceForBot();
+        }
+        else {
+            this.startMovingTimer(curPlayerNumber);
+            rollDiceModal.open();
+        }
         
-        rollDiceModal.open();
+    }
+
+    async rollTheDiceForBot(){
+        await sleep(this,botWaitingTime);
+        let tax;
+        let newBtnText;
+        let wasRemovedPlayer = false;
+        rollDiceModal.close();
+
+        // clearInterval(this.movingTimerId);
+        // clearInterval(this.purchaseTimerId2);
+
+        //получение двух случайных чисел
+        let randomNum1 = getRandomInteger(1, 6);
+        let randomNum2 = getRandomInteger(1, 6);
+        let randomSum = randomNum1 + randomNum2;
+        this.addMessage("rollDice",randomNum1,randomNum2);
+        this.movePlayer(randomSum);
+   
+        
+        let curField = fields[this.currentPlayer.currentFieldNum-1]
+        //прокачиваемое и не купленное поле
+        if((curField instanceof PurchasedField) && !curField.owner){
+            this.addMessage("gotOnField");
+            let fieldCost = this.currentPlayer.currentFieldObj.cost;
+            newBtnText = "Купить за " + fieldCost + "k";
+            changeModalBtnText(buyFieldButtonId,newBtnText);
+            //вероятность того, что бот купит поле 2/3, но при условии, что есть ему хватит денег
+            performRandomFunction([this.currentPlayer.buyField,this.currentPlayer.buyField,this.currentPlayer.putUpAuctionField],this.currentPlayer);
+
+            // if(this.pressedModalButton){
+            //     this.pressedModalButton = false;
+            // }
+            // else {
+            //     this.playerLose();
+            //     buyFieldModal.close();
+            //     wasRemovedPlayer = true;
+            // }   
+        }
+        /*
+        //поле старт
+        else if (curField instanceof StartField){
+            this.currentPlayer.currentFieldObj.addStartBonus();
+        }
+        //поле полиция отправляет в тюрьму
+        else if (curField instanceof GoToJailField){
+            await sleep(this,waitingTimeGoJail);
+            this.currentPlayer.currentFieldObj.goToJail();
+        }
+        //поле посещение тюрьмы
+        else if (curField instanceof JailVisitingField){
+            this.addMessage("jailVisiting")
+        }
+        //поле выплаты налога
+        else if (curField instanceof TaxField){
+            
+            if (curField.fieldNum == 5) {
+                tax = incomeTax;
+                this.addMessage("payIncomeTax");
+            }
+            else {
+                tax = luxeryTax;
+                this.addMessage("payLuxeryTax");
+            }  
+            newBtnText = "Заплатить " + tax + "k";
+            changeModalBtnText(payTaxButtonId,newBtnText);
+            payTaxModal.open();
+            await sleep(this,this.maxPurchaseTime*1000);
+            if(this.pressedModalButton){
+                this.pressedModalButton = false;
+            }
+            else {
+                this.playerLose();
+                payTaxModal.close();
+                wasRemovedPlayer = true;
+            } 
+        }
+        //поле казино
+        else if (curField instanceof JackpotField){
+            this.addMessage("gotOnJackpot");
+        }
+        //поле казино
+        else if (curField instanceof ChanceField){
+            this.addMessage("gotOnChance");
+        }
+        */
+        //поле 
+        if (!wasRemovedPlayer){
+            this.playersQueue.shift();
+            this.playersQueue.push(this.currentPlayer);
+            this.updatePlayersBlock();     
+            this.currentPlayer = this.playersQueue[0];
+
+            wasRemovedPlayer = false; //возврат состояния флага
+        }
+        
+        let curPlayerNumber = this.playersQueue[0].number;
+
+        if (this.currentPlayer.isBot){
+            this.rollTheDiceForBot();
+        }
+        else {
+            this.startMovingTimer(curPlayerNumber);
+            rollDiceModal.open();
+        }
     }
 
     playerLose(){
@@ -1059,7 +1187,7 @@ class Game {
 function createGame(playerNum,playerData){
     let players = [];
     for(let i=0;i<playerNum;i++){
-        players[i] = new Player(playerData[i][0],playerData[i][1],playerData[i][2]);
+        players[i] = new Player(playerData[i][0],playerData[i][1],playerData[i][2],playerData[i][3]);
     }
     
     game = new Game(playerNum,players);
@@ -1070,10 +1198,10 @@ function createGame(playerNum,playerData){
 
 function startGame(){
     let playerNum = 5;
-    let playerData = [["Victor",1000,0],["ILON MASK",15000,1],["Гена",15000,2],["Галкин",15000,3],["Семён",15000,4]];
+    let playerData = [["Виктор",1000,0,false],["Пугачева",15000,1,true],["Гена",15000,2,true],["Галкин",15000,3,true],["Семён",15000,4,true]];
     
-    createGame(playerNum, playerData);
     createFields(game);
+    createGame(playerNum, playerData);
     addPlayersBlock(playerNum,game.playerList);
 
     createModals(game);
