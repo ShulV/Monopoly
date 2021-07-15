@@ -60,6 +60,7 @@ let buyFieldModal;
 
 
 function addPlayersBlock(playerNumber, playerList){
+    // добавление информации об игроках на боковую панель
     for(let i=0; i<playerNumber;i++){
         let div = document.createElement("div");
         div.setAttribute("class","player-block");
@@ -97,6 +98,7 @@ function addPlayersBlock(playerNumber, playerList){
 }
 
 function addBgToPurchasedField(playerBuyer,fieldNumber){
+    //добавляет фон купленному полю
     let playerNum = playerBuyer.number;
     let bgColorClass = classBackgroundName[playerNum];
     let fieldBlockId = "play-cell-"+(fieldNumber);
@@ -105,6 +107,7 @@ function addBgToPurchasedField(playerBuyer,fieldNumber){
 }
 
 function setFieldParams(){
+    // установка основных размеров относительно окна браузера
     // 1,11,21,31 - угловые поля
     let root = document.querySelector(':root');
     let cellSize = getComputedStyle(root).getPropertyValue('--cell-size');
@@ -197,11 +200,13 @@ function setFieldParams(){
 }
 
 function changeModalBtnText(buttonId,newText){
+    //изменение текста динамических кнопок
     let btnSpan = document.querySelector("#"+buttonId+" span");
     btnSpan.textContent = newText;
 }
 
 function createFields(game){
+    //создание и инициализация объектов - полей
     for(let i=0;i<40;i++){
         let fieldNum = i+1;
         let monopolyNum = getMonopolyNumber(fieldNum);
@@ -304,6 +309,7 @@ class ModalWindow{
         
     }
     createModalInfoElem(){
+        //создание html элемента для модального информационного окна (также на нем есть кнопки построить и заложить поле)
         const modal = document.createElement('div');
         modal.classList.add("modal-info-block");
         modal.setAttribute('id',"modal-info-block");
@@ -328,6 +334,7 @@ class ModalWindow{
     }
     
     createModalWindowElem(isOneButton){
+        //создание html элемента для модальных окон всплывающих над чатом
         const modal = document.createElement('div');
         modal.classList.add("modal-block");
         modal.setAttribute('id',this.modalName);
@@ -364,17 +371,20 @@ class ModalWindow{
         return modal;
     }
     deleteSecondButton(){
+        //удаление второй кнопке на модальном окне (создается всегда с двумя)
         let btn2 = document.getElementById(this.btnId2);
         document.getElementById(this.footerId).removeChild(btn2);
         document.getElementById(this.btnId1).classList.remove("modal-small-btn");
     }
     open(){
+        //открытие модального окна
         document.getElementById(this.modalName).classList.add("open");
         if(this.modalType == "buyField" || this.modalType == "payTax")
             this.game.startBuyFieldTimer(this.game.currentPlayer.number);
 
     }
     close(){
+        //закрытие модального модального окна
         document.getElementById(this.modalName).classList.remove("open");
         clearTimeout(this.game.purchaseTimerId);
         clearInterval(this.game.purchaseTimerId2);
@@ -384,6 +394,7 @@ class ModalWindow{
 
 
 function createModals(game){
+    //функция создания объектов модальных окон и их html элементов
     rollDiceModal = new ModalWindow("rollDice",game);
     buyFieldModal = new ModalWindow("buyField",game);
     payTaxModal = new ModalWindow("payTax",game);
@@ -391,6 +402,7 @@ function createModals(game){
 
 
 function createPlayer(id,playerNumber){
+    //установка свойств игрока (вызывается из конструктора)
     let circle = document.createElement("div");
     circle.style.height = "25px";
     circle.style.width = "25px";
@@ -408,28 +420,26 @@ function createPlayer(id,playerNumber){
 }
 
 function getRandomInteger(min, max) {
-    // случайное число от min до (max+1)
+    // получение случайного числа от min до (max+1)
     let rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
 }
 
 function performRandomFunction(functions,playerContext){
-    
-    console.log(this);
+    //выполение случайной функции из полученных в параметрах
     let randonFuncNum = getRandomInteger(0,functions.length-1);
     console.log("func num=" + randonFuncNum);
     let funcPlayerContext = functions[randonFuncNum].bind(playerContext);
     funcPlayerContext();
-    
-
-
 }
 
 function doScrollDown(scrollBlockName) {
+    //опуститься по скроллу к самому нижнему (последнему) сообщению в чате
     document.getElementById(scrollBlockName).scrollTop = 999999;
 }
 
 function getMonopolyNumber(fieldNum){
+    //получение номера монополии
     let fl = parseInt(fieldNum);
     if (fl == 1 || fl == 11 || fl == 21 || fl == 31){
         return null; //угловое поле
@@ -471,6 +481,7 @@ function getMonopolyNumber(fieldNum){
 }
 
 function getSpecialFieldType(fieldNum){
+    //получение класса спец поля
     let fl = parseInt(fieldNum);
     if (fl == 1){
         return StartField; //угловое поле (Start)
@@ -493,14 +504,16 @@ function getSpecialFieldType(fieldNum){
 }
 
 function isLastField(fieldNum){
+    //проверка, является ли поле последним в монополии
     let fl = fieldNum;
     if(fl==4 || fl == 10 || fl == 15|| fl == 20 || 
         fl == 25 || fl == 30 || fl == 35 || fl == 40) return true;
     return false
 }
 
-// функция выдает путь по квадрату относительно размера экрана пользователя
+
 function setScalablePath(playerNum){
+    // функция выдает путь по квадрату относительно размера экрана пользователя
     let players = [];
     for(let i=0;i<playerNum;i++){
         players[i] = document.querySelector('.'+playersIds[i]);
@@ -675,28 +688,34 @@ class Player{
 
 
     buyField(){
+        //покупка поля
         let isBot = game.currentPlayer.isBot;
         console.log("buyField this="+this)
         let fieldCost = this.currentFieldObj.cost;
         if (this.money >= fieldCost){
-            if(isBot) this.game.outerResolve();
+            if(!isBot) this.game.outerResolve();
             this.game.pressedModalButton = true;
             this.money -= fieldCost;
             this.purchasedFields.push(this.currentFieldObj);
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
             this.game.addMessage("buyingField");
-            if(isBot) buyFieldModal.close();
+            buyFieldModal.close();
         }
         else{
-            if(isBot) alert("Вам не хватило денег на покупку!");
-            else buyFieldModal.close();
+            if(!isBot) {
+                buyFieldModal.close();
+                alert("Вам не хватило денег на покупку!");
+                this.game.currentPlayer.putUpAuctionField();
+            }
         }
 
         
     }
 
     payTax(){
+        //выплата налога
+        let isBot = game.currentPlayer.isBot;
         let tax;
         if (this.currentFieldNum == 5) {
             tax=2000;
@@ -706,7 +725,7 @@ class Player{
         }
         
         if (this.money >= tax){
-            this.game.outerResolve();
+            if(!isBot) this.game.outerResolve();
             this.game.pressedModalButton = true;
             this.money -= tax;
             this.game.outerResolve();
@@ -716,17 +735,20 @@ class Player{
             }
         else
         {
-            alert("Недостаточно денег!")
+            if(!isBot) {
+                payTaxModal.close();
+                alert("Недостаточно денег!");
+            }
+            this.game.playerLose();//УБРАТЬ КОГДА БУДЕТ ВОЗМОЖНОСТЬ ЗАКЛАДЫВАТЬ ПОЛЯ И ОБМЕНИВАТЬСЯ
         }
     }
 
     putUpAuctionField(){
-        console.log(this)
-        // if(this.isBot) 
-        this.game.outerResolve();
+        //выставление на аукцион
+        let isBot = game.currentPlayer.isBot;
+        if(!isBot) this.game.outerResolve();
         this.game.pressedModalButton = true;
         this.game.addMessage("putUpAuction");
-        // if(this.isBot)
         buyFieldModal.close();
     }
   
@@ -742,8 +764,8 @@ class Player{
 
 class Game {
     constructor(playerNumber,playerList) {
-        this.playerNumber = playerNumber;
-        this.curNonLosersNumber = playerNumber;
+        this.playerNumber = playerNumber; //количество игрков (постоянное)
+        this.curNonLosersNumber = playerNumber; //текущее количество игроков
         this.playerList = playerList;
         this.currentPlayer = this.playerList[0]; 
         this.playersQueue = []; //очередь игроков  
@@ -784,6 +806,7 @@ class Game {
    
         
         let curField = fields[this.currentPlayer.currentFieldNum-1]
+        //попадание на поля
         //прокачиваемое и не купленное поле
         if((curField instanceof PurchasedField) && !curField.owner){
             this.addMessage("gotOnField");
