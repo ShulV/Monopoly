@@ -867,7 +867,7 @@ class Game {
         else if (curField instanceof JackpotField){
             this.addMessage("gotOnJackpot");
         }
-        //поле казино
+        //поле шанс
         else if (curField instanceof ChanceField){
             this.addMessage("gotOnChance");
         }
@@ -930,7 +930,7 @@ class Game {
             //     wasRemovedPlayer = true;
             // }   
         }
-        /*
+        
         //поле старт
         else if (curField instanceof StartField){
             this.currentPlayer.currentFieldObj.addStartBonus();
@@ -944,6 +944,15 @@ class Game {
         else if (curField instanceof JailVisitingField){
             this.addMessage("jailVisiting")
         }
+        //поле казино
+        else if (curField instanceof JackpotField){
+            this.addMessage("gotOnJackpot");
+        }
+        //поле шанс
+        else if (curField instanceof ChanceField){
+            this.addMessage("gotOnChance");
+        }
+        /*
         //поле выплаты налога
         else if (curField instanceof TaxField){
             
@@ -968,14 +977,7 @@ class Game {
                 wasRemovedPlayer = true;
             } 
         }
-        //поле казино
-        else if (curField instanceof JackpotField){
-            this.addMessage("gotOnJackpot");
-        }
-        //поле казино
-        else if (curField instanceof ChanceField){
-            this.addMessage("gotOnChance");
-        }
+        
         */
         //поле 
         if (!wasRemovedPlayer){
@@ -1221,7 +1223,7 @@ function createGame(playerNum,playerData){
 
 function startGame(){
     let playerNum = 5;
-    let playerData = [["Виктор",1000,0,false],["Пугачева",15000,1,true],["Гена",15000,2,true],["Галкин",15000,3,true],["Семён",15000,4,true]];
+    let playerData = [["Виктор",15000,0,false],["Пугачева",15000,1,true],["Гена",15000,2,true],["Галкин",15000,3,true],["Семён",15000,4,true]];
     
     createFields(game);
     createGame(playerNum, playerData);
