@@ -700,7 +700,7 @@ class Player{
             this.currentFieldObj.owner = this;
             addBgToPurchasedField(this,this.currentFieldObj.fieldNum);
             this.game.addMessage("buyingField");
-            buyFieldModal.close();
+            if(!isBot) buyFieldModal.close();
         }
         else{
             if(!isBot) {
@@ -728,10 +728,9 @@ class Player{
             if(!isBot) this.game.outerResolve();
             this.game.pressedModalButton = true;
             this.money -= tax;
-            this.game.outerResolve();
             this.game.pressedModalButton = true;
             this.game.addMessage("paidExpenses");
-            payTaxModal.close();
+            if(!isBot) payTaxModal.close();
             }
         else
         {
@@ -749,7 +748,7 @@ class Player{
         if(!isBot) this.game.outerResolve();
         this.game.pressedModalButton = true;
         this.game.addMessage("putUpAuction");
-        buyFieldModal.close();
+        if(!isBot) buyFieldModal.close();
     }
   
   }
@@ -915,20 +914,8 @@ class Game {
         //прокачиваемое и не купленное поле
         if((curField instanceof PurchasedField) && !curField.owner){
             this.addMessage("gotOnField");
-            let fieldCost = this.currentPlayer.currentFieldObj.cost;
-            newBtnText = "Купить за " + fieldCost + "k";
-            changeModalBtnText(buyFieldButtonId,newBtnText);
             //вероятность того, что бот купит поле 2/3, но при условии, что есть ему хватит денег
-            performRandomFunction([this.currentPlayer.buyField,this.currentPlayer.buyField,this.currentPlayer.putUpAuctionField],this.currentPlayer);
-
-            // if(this.pressedModalButton){
-            //     this.pressedModalButton = false;
-            // }
-            // else {
-            //     this.playerLose();
-            //     buyFieldModal.close();
-            //     wasRemovedPlayer = true;
-            // }   
+            performRandomFunction([this.currentPlayer.buyField,this.currentPlayer.buyField,this.currentPlayer.putUpAuctionField],this.currentPlayer); 
         }
         
         //поле старт
@@ -952,7 +939,7 @@ class Game {
         else if (curField instanceof ChanceField){
             this.addMessage("gotOnChance");
         }
-        /*
+        
         //поле выплаты налога
         else if (curField instanceof TaxField){
             
@@ -964,21 +951,10 @@ class Game {
                 tax = luxeryTax;
                 this.addMessage("payLuxeryTax");
             }  
-            newBtnText = "Заплатить " + tax + "k";
-            changeModalBtnText(payTaxButtonId,newBtnText);
-            payTaxModal.open();
-            await sleep(this,this.maxPurchaseTime*1000);
-            if(this.pressedModalButton){
-                this.pressedModalButton = false;
-            }
-            else {
-                this.playerLose();
-                payTaxModal.close();
-                wasRemovedPlayer = true;
-            } 
+            this.currentPlayer.payTax();
         }
         
-        */
+        
         //поле 
         if (!wasRemovedPlayer){
             this.playersQueue.shift();
